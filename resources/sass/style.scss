@@ -1,0 +1,26 @@
+nav{
+    img{max-width: 7em;}
+}
+#left-nav{
+    //border: 1px solid red;
+    a{
+        border-bottom: 1px solid rgb(154, 192, 154);
+    }
+}
+footer{
+    font-size: larger; font-weight: bolder;
+}
+@media only screen and (min-width: 0px) and (max-width: 767px) {
+
+}
+@media only screen and (min-width: 480px){
+}
+@media only screen and (min-width: 768px){
+
+}
+@media only screen and (min-width: 992px){
+    body{background-color: green($color: #000000);}
+}
+@media only screen and (min-width: 1200px){
+    body{background-color: red($color: #000000);}
+}
