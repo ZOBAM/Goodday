@@ -3,14 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Customer};
+use App\{Customer, Saving, Savings_collection};
 use App\Classes\{CustomerClass};
 use Auth;
 
 class MainController extends Controller
 {
 
-    public function StoreSavings(Request $request){
+    public function StoreSavings(Request $request, $customer_id = false){
+        $this->validate($request, [
+            'unit_amount'        => 'required|numeric|min:50|max:50000',
+            'saving_interval'   => 'required|string|min:4|max:7',
+            'start_date'        => 'nullable|date',
+        ]);
+            $saving = new Saving;
+            $saving->unit_amount = $request->unit_amount;
+            $saving->saving_interval = $request->saving_interval;
+            if(!empty($request->input('start_date'))){
+                $saving->start_date = $request->start_date;
+            }
         return "Store savings route reached";
     }
 
