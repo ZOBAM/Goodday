@@ -16,7 +16,14 @@
             </div>
         </div> <!-- end of left nav -->
         <div class="col-sm-9" id="main-content">
-            @include($section.'.'.$action)
+            <div class="card">
+                <div class="card-header">
+                    {{$variable_arr['card_header']}}
+                </div>
+                <div class="card-body">
+                    @include($section.'.'.$action)
+                </div>
+            </div>
         </div>
     </div>
 </div>

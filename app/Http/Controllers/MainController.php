@@ -79,9 +79,18 @@ class MainController extends Controller
     public function StoreLoans(Request $request){
         return "Store loan route reached";
     }
+    //set customer session
+    public function SetCurrentCustomer($customer){
+        $names = ['John','Jane'];
+        session(['current_customer' => $customer]);
+
+        /* if(session()->has('key')){
+            return "Session found";
+        } */
+    }
     //the below function will handle the various links based on provided section
     public function index($section = false, $action = false, $id = false){
-        $variable_arr = [];
+        $variable_arr['card_header'] = 'Customer\'s Area';
         $sections = ['customers','savings','loans','staffs','transactions'];
         if(in_array($section,$sections)){
             switch($section){
@@ -102,6 +111,9 @@ class MainController extends Controller
                                 if(!$variable_arr['customer']){
                                     $variable_arr['customer'] = false;
                                 }
+                                else{//set current customer session
+                                    $this->SetCurrentCustomer($variable_arr['customer']);
+                                }
                             }
                             else{
                                 $variable_arr['customer'] = false;
@@ -109,10 +121,13 @@ class MainController extends Controller
                         break;
                         case 'view':
                             if(is_numeric($id)){
+                                $variable_arr['new_customer'] = false;
                                 if(isset($_GET['new'])){
                                     $variable_arr['new_customer'] = true;
                                 }
                                 $variable_arr['customer'] = Customer::findOrFail($id);
+                                //set current customer session
+                                $this->SetCurrentCustomer($variable_arr['customer']);
                             }
                             else{
                                 $variable_arr['customers'] = Customer::get();

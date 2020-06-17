@@ -1,27 +1,30 @@
-<div class="card">
-  <div class="card-header">
-    View Customer's Info
-  </div>
-  <div class="card-body">
-    <h5 class="card-title text-center">Zobam Acount Details</h5>
-    @isset($variable_arr['customers'])
-        <h2>listing customers</h2>
-        <table class="table">
-        @foreach($variable_arr['customers'] as $customer)
-        <tr>
-            <td>{{$customer->first_name}}</td><td>{{$customer->surname}}</td><td>{{$customer->account_number}}</td><td>{{$customer->phone_number}}</td><td>{{$customer->email}}</td>
-        </tr>
-        @endforeach
-        </table>
-    @endisset
-    @isset($variable_arr['customer'])
-        @if($variable_arr['new_customer'])
-            This is a new customer
-        @endif
-        listing the customer
-    @endisset
-  </div>
-</div>
+@isset($variable_arr['customers'])
+<h5 class="card-title text-center">List of Customers</h5>
+    <table class="table table-responsive table-striped table-hover">
+    @foreach($variable_arr['customers'] as $customer)
+    <tr id="{{$customer->id}}" class="t-row">
+        <td>{{$customer->first_name}}</td><td>{{$customer->surname}}</td><td>{{$customer->account_number}}</td><td>{{$customer->phone_number}}</td><td>{{$customer->email}}</td>
+    </tr>
+    @endforeach
+    </table>
+@endisset
+@isset($variable_arr['customer'])
+<h5 class="card-title text-center">
+    {{$variable_arr['customer']->surname.' '.$variable_arr['customer']->first_name}} Details<br>
+    {{$variable_arr['customer']->account_number}}
+</h5>
+    @if($variable_arr['new_customer'])
+        This is a new customer
+    @endif
+    listing the customer
+@endisset
+
 @section('footerLinks')
-<script></script>
+<script>
+    $('.t-row').click(function(){
+        //alert('Clicked a t-row');
+        let customerID = $(this).attr('id');
+        location = '/customers/view/'+customerID;
+    })
+</script>
 @endsection
