@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'HomePageController@index')->name('homepage');
 Auth::routes();
 //Route::get('/savings/{action?}', 'MainController@savings');
-Route::post('/savings', 'MainController@StoreSavings');
+Route::post('/savings/{customer_Id?}/{action?}', 'MainController@StoreSavings');
 //Route::get('/customers/{action?}', 'MainController@customers');
 Route::post('/customers/{customer_id?}', 'MainController@StoreCustomer');
 //Route::get('/loans/{action?}', 'MainController@loans');

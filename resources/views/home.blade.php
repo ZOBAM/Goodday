@@ -19,6 +19,13 @@
             <div class="card">
                 <div class="card-header">
                     {{$variable_arr['card_header']}}
+                    @if($variable_arr['session_isset'])
+                    <span class="float-right">
+                        <a href="{{url()->current().'?end_session=1'}}">
+                            Switch Customer
+                        </a>
+                    </span>
+                    @endif
                 </div>
                 <div class="card-body">
                     @include($section.'.'.$action)

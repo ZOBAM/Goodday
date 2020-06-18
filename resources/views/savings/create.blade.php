@@ -1,5 +1,13 @@
+@if($variable_arr['session_isset'])
+<div class="row">
+    <div class="col-sm-4 offset-sm-4 text-center">
+        <img src="{{asset('/images/customers/'.Session()->get('current_customer')->passport_link)}}" alt="" style="max-width: 50px;"><br>
+        {{Session()->get('current_customer')->surname}}
+    </div>
+</div>
+
 <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
-<form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = '/savings'>
+<form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{Session()->get('current_customer')->id}}">
     {{ csrf_field() }}
     <div class="row">
         <div class="col">
@@ -61,6 +69,10 @@
         </div>
     </div>
 </form>
+@else
+    <!-- The customer object is not yet set and therefore display the form for getting customer ID -->
+    @include('layouts.set_customer_session')
+@endif
 @section('footerLinks')
 <script src="{{asset('/js/customer.js')}}" defer></script>
 @endsection

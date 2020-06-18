@@ -21,9 +21,11 @@ class CreateSavingsTable extends Migration
             $table->string('saving_interval');
             $table->float('withdrawable_amount');
             $table->smallInteger('saving_cycle');
+            $table->float('saving_cycle_total');
             $table->boolean('cycle_complete');
             $table->smallInteger('collection_count');
             $table->timestamp('start_date')->nullable();
+            $table->unsignedBigInteger('created_by');
             $table->timestamps();
         });
     }

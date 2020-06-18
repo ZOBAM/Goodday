@@ -1,15 +1,10 @@
-<h5 class="card-title text-center">Zobam Acount Details</h5>
 <!-- If a customer object was returned from server, display the edith form -->
-@if($variable_arr['customer'])
+@if($variable_arr['session_isset'])
 @php
-    $customer = $variable_arr['customer']
+    $customer = Session()->get('current_customer')
 @endphp
-    <h2>Updating {{$customer->surname.' '.$customer->first_name}} ({{$customer->account_number}})</h2>
-    <table class="table">
-    <tr>
-        <td>{{$customer->first_name}}</td><td>{{$customer->surname}}</td><td>{{$customer->account_number}}</td><td>{{$customer->phone_number}}</td><td>{{$customer->email}}</td>
-    </tr>
-    </table>
+<h5 class="card-title text-center">Updating {{$customer->surname.' '.$customer->first_name}} <br>({{$customer->account_number}})</h5>
+    <!-- <h2>Updating {{$customer->surname.' '.$customer->first_name}} ({{$customer->account_number}})</h2> -->
 
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = '/customers/{{$customer->id}}'>
         {{ csrf_field() }}
@@ -196,19 +191,7 @@
     </form>
 @else
     <!-- The customer object is not yet set and therefore display the form for getting customer ID -->
-    <form id="account_id">
-        <div class="form-group">
-            <label for="account_number">Enter Customer Account No:{{Session()->get('current_customer')->surname}}</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">GD</span>
-                </div>
-                <input type="text" class="form-control" name="account_number" id="account_number" autofocus>
-            </div>
-            <span id="status" class="d-none">checking ...</span>
-        </div>
-            <button class="form-control btn-primary">Get Details</button>
-    </form>
+    @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
 <script>

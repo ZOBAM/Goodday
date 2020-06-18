@@ -3,26 +3,52 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Customer, Saving, Savings_collection};
+use App\{Customer, Saving, Savings_collection,Withdrawal,Balance};
 use App\Classes\{CustomerClass};
 use Auth;
 
 class MainController extends Controller
 {
 
-    public function StoreSavings(Request $request, $customer_id = false){
-        $this->validate($request, [
-            'unit_amount'        => 'required|numeric|min:50|max:50000',
-            'saving_interval'   => 'required|string|min:4|max:7',
-            'start_date'        => 'nullable|date',
-        ]);
+    public function StoreSavings(Request $request, $customer_id = false, $action = false){
+        //HANDLE COLLECTIONS
+        if($action == 'collection'){
+            $this->validate($request, [
+                'amount_saved'       => 'required|numeric|min:50|max:50000',
+            ]);
+            $collection = new Savings_collection;
+            $collection->amount_saved = $request->amount_saved;
+            $collection->saving_id = $customer_id;
+            $collection->collected_by = Auth::id();
+            $collection->save();
+            return "Collection submitted";
+        }
+        //HANDLE DISBURSING
+        elseif ($action == 'disburse') {
+            $this->validate($request, [
+                'amount_withdrawn'       => 'required|numeric|min:50|max:50000',
+            ]);
+        }
+        //HANDLE CREATING SAVINGS
+        else{
+            $this->validate($request, [
+                'unit_amount'       => 'required|numeric|min:50|max:50000',
+                'saving_interval'   => 'required|string|min:4|max:7',
+                'start_date'        => 'nullable|date',
+            ]);
             $saving = new Saving;
-            $saving->unit_amount = $request->unit_amount;
-            $saving->saving_interval = $request->saving_interval;
+            $saving->unit_amount        = $request->unit_amount;
+            $saving->created_by         = Auth::id();
+            $saving->customer_id        = $customer_id;
+            $saving->saving_interval    = $request->saving_interval;
             if(!empty($request->input('start_date'))){
                 $saving->start_date = $request->start_date;
             }
-        return "Store savings route reached";
+            //get saving cycle
+            $saving->saving_cycle       = Saving::where('customer_id',$customer_id)->count() + 1;
+            $saving->save();
+            return "Store savings route reached and saving succeeded!";
+        }
     }
 
     public function StoreCustomer(Request $request, $customer_id = false){
@@ -86,26 +112,47 @@ class MainController extends Controller
             return redirect($redirect_ur);
         }
     }
-
+    //set customer session
+    public function SetCurrentCustomer(){
+        if(isset($_GET['account_number']) && is_numeric($_GET['account_number'])){
+            $account_number = 'GD'.$_GET['account_number'];
+            $customer = Customer::where('account_number',$account_number)->first();
+            if(!$customer){
+                return false;
+            }
+            else{//set current customer session
+                session(['current_customer' => $customer]);
+                return true;
+                //return url()->current();
+                //return redirect('/savings');
+            }
+        }
+        else{
+            return false;
+        }
+    }//SetCurrentCustomer
+    public function endCurrentSession(){
+        session()->forget('current_customer');
+        return true;
+    }
     public function StoreLoans(Request $request){
         return "Store loan route reached";
     }
-    //set customer session
-    public function SetCurrentCustomer($customer){
-        $names = ['John','Jane'];
-        session(['current_customer' => $customer]);
-
-        /* if(session()->has('key')){
-            return "Session found";
-        } */
-    }
     //the below function will handle the various links based on provided section
     public function index($section = false, $action = false, $id = false){
+        //end session
+        if(isset($_GET['end_session'])){
+            if($this->endCurrentSession()){
+                return redirect(url()->current());
+            }
+        }
         $variable_arr['card_header'] = 'Customer\'s Area';
+        $variable_arr['require_session'] = false;
+        $variable_arr['session_isset'] = session()->has('current_customer')? true : false;
         $sections = ['customers','savings','loans','staffs','transactions'];
         if(in_array($section,$sections)){
             switch($section){
-                case 'customers':
+                case 'customers'://HANDLE CUSTOMER SECTION
                     $action = $action? $action : 'view';
                     $section_nav = [
                         'Create Account'          =>  '/customers/create',
@@ -116,18 +163,11 @@ class MainController extends Controller
                         case 'create':
                         break;
                         case 'edit':
-                            if(isset($_GET['account_number']) && is_numeric($_GET['account_number'])){
-                                $account_number = 'GD'.$_GET['account_number'];
-                                $variable_arr['customer'] = Customer::where('account_number',$account_number)->first();
-                                if(!$variable_arr['customer']){
-                                    $variable_arr['customer'] = false;
+                            $variable_arr['require_session'] = true;
+                            if(!$variable_arr['session_isset']){
+                                if($this->SetCurrentCustomer()){
+                                    return redirect(url()->current());
                                 }
-                                else{//set current customer session
-                                    $this->SetCurrentCustomer($variable_arr['customer']);
-                                }
-                            }
-                            else{
-                                $variable_arr['customer'] = false;
                             }
                         break;
                         case 'view':
@@ -149,7 +189,16 @@ class MainController extends Controller
                     }//end switch
                     //return $section_nav;
                 break;
-                case 'savings':
+                case 'savings'://HANDLE SAVING SECTION
+                    $variable_arr['require_session'] = true;
+                    $variable_arr['saving'] = Saving::where('customer_id',Session()->get('current_customer')->id)->first();
+                    //$variable_arr['unit_amount'] = $variable_arr['unit_amount']->unit_amount;
+                    //return $variable_arr['unit_amount'];
+                    if(!$variable_arr['session_isset']){
+                        if($this->SetCurrentCustomer()){
+                            return redirect(url()->current());
+                        }
+                    }
                     $action = $action? $action : 'collection';
                     $section_nav = [
                         'Create Saving'          =>  '/savings/create',
@@ -157,8 +206,20 @@ class MainController extends Controller
                         'Disburse'    =>  '/savings/disburse',
                         'Close Saving'    =>  '/savings/close_saving'
                     ];
+                    switch($action){
+                        case 'create':
+                        break;
+                        case 'collection':
+                        break;
+                        case 'close_saving':
+                        break;
+                        case 'disburse':
+                        break;
+                        default:
+                        return redirect('/savings/collection');
+                    }
                 break;
-                case 'loans':
+                case 'loans'://HANDLE LOAN SECTION
                     $action = $action? $action : 'repayment';
                     $section_nav = [
                         'New Loan'          =>  '/loans/create',
@@ -167,7 +228,7 @@ class MainController extends Controller
                         'Loan Repayment'    =>  '/loans/repayment'
                     ];
                 break;
-                case 'transactions':
+                case 'transactions'://HANDLE TRANSACTION SECTION
                     $action = 'view';
                     $section_nav = [
                         'Today'          =>  '/transactions/today',
@@ -175,7 +236,7 @@ class MainController extends Controller
                         'This Month'    =>  '/transactions/month',
                     ];
                 break;
-                case 'staffs':
+                case 'staffs'://HANDLE STAFF SECTION
                     $action = $action? $action : 'create';
                     $section_nav = [
                         'Add Staff'          =>  'staffs/create',
