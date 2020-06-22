@@ -7,7 +7,7 @@
 </div>
 
 <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
-<form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{ $variable_arr['saving']->id }}/disburse">
+<form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{Session()->get('current_customer')->id}}/disburse">
     {{ csrf_field() }}
     <div class="row">
         <div class="col">
