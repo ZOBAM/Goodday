@@ -13,7 +13,7 @@
         <div class="col">
             <div class="form-group">
                 <label for="amount">Loan Amount(N)*:</label>
-                <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(N)" name="amount" value="{{ old('amount') }}" min="1000" max="200000" step="1000" required autofocus>
+                <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(N)" name="amount" value="{{ old('amount') }}" min="1000" max="200000" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
                 @error('amount')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -40,13 +40,13 @@
         <div class="col">
             <div class="form-group">
                 <label for="duration">Duration of Loan:</label>
-                <select class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration') }}" required>
-                    <option value="1week">One Week</option>
-                    <option value="2weeks">Two Weeks</option>
-                    <option value="3weeks">Three Weeks</option>
-                    <option value="1month">One Month</option>
-                    <option value="2months">Two Months</option>
-                    <option value="3months">Three Months</option>
+                <select class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration') }}" required v-model = "duration">
+                    <option value="7">One Week</option>
+                    <option value="14">Two Weeks</option>
+                    <option value="21">Three Weeks</option>
+                    <option value="30">One Month</option>
+                    <option value="60">Two Months</option>
+                    <option value="90">Three Months</option>
                 </select>
                 @error('duration')
                     <span class="invalid-feedback" role="alert">
@@ -76,7 +76,7 @@
                 <label for="repay_interval">Repay Interval:</label>
                 <select class="form-control @error('repay_interval') is-invalid @enderror" id="repay_interval" name="repay_interval" value="{{ old('repay_interval') }}" required>
                     <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
+                    <option value="monthly" v-if = "duration>21">Monthly</option>
                 </select>
                 @error('repay_interval')
                     <span class="invalid-feedback" role="alert">
@@ -101,19 +101,19 @@
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                <input type="checkbox" name="paid_insurance" class="form-check-input" value=1>Has paid 2% (<span class="loan-fee">N0</span>) for Insurance.
+                <input type="checkbox" name="paid_insurance" class="form-check-input" v-model="paidFee"  value=1>Has paid 2% (N@{{loanFee}}) for Insurance.
                 </label>
             </div>
             <div class="form-check">
                 <label class="form-check-label">
-                <input type="checkbox" name="paid_admin" class="form-check-input" value=1>Has paid 2% (<span class="loan-fee">N0</span>) for Admin.
+                <input type="checkbox" name="paid_admin" class="form-check-input" v-model="paidFee"  value=2>Has paid 2% (N@{{loanFee}}) for Admin.
                 </label>
             </div>
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-*-*">
-            <button type="submit" class="btn btn-primary" id="submit-loan" disabled = true>Submit Loan Application</button>
+            <button type="submit" class="btn btn-primary" id="submit-loan" :disabled = "paidFee.length<2">Submit Loan Application</button>
         </div>
     </div>
 </form>
@@ -122,11 +122,27 @@
     @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
-<script src="{{asset('/js/customer.js')}}" async></script>
-<script async>
+<script src="{{asset('/js/customer.js')}}" ></script>
+<script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!',
+    loanAmount: 1000,
+    loanFee : 20,
+    showSubmit : true,
+    paidFee : [],
+    duration : 7
+  },
+  methods:{
+      getLoanFee : function(){
+          this.loanFee = this.loanAmount * 2/100;
+      }
+  }
+})
 $("input[required],select[required],textarea[required]").removeAttr('required');
 //calculate the fees when loan amount is changed
-$('input[name = "amount"]').change(function(){
+/* $('input[name = "amount"]').change(function(){
     let amount = $(this).val();
     let adminFee = amount * (2/100);
     $('.loan-fee').text('N'+adminFee);
@@ -142,6 +158,6 @@ $('.form-check-input').change(function(){
         $('#submit-loan').attr('disabled',false);
     }
 })
-
+ */
 </script>
 @endsection

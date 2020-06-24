@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Customer, Saving, Savings_collection,Withdrawal,Balance};
+use App\{Customer, Saving, Savings_collection,Withdrawal,Balance,Loan};
 use App\Classes\{CustomerClass};
 use Auth;
 
@@ -125,6 +125,14 @@ class MainController extends Controller
                         'Approved Loans'        =>  '/loans/approved',
                         'Loan Repayment'        =>  '/loans/repayment'
                     ];
+                    switch($action){
+                        case 'pending':
+                            $variable_arr['pending_loans'] = Loan::where('approval_date',null)->paginate(7);
+                        break;
+                        case 'approved':
+                           $variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
+                        break;
+                    }
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
                     $action = 'view';
