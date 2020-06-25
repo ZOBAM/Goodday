@@ -13,6 +13,7 @@
         <th>Loan Amount (N)</th>
         <th>Repay Amount (N)</th>
         <th>Outstanding (N)</th>
+        <th>Action</th>
     </tr>
     @foreach($variable_arr['pending_loans'] as $loan)
     <tr>
@@ -21,6 +22,7 @@
         <td>{{$loan->amount}}</td>
         <td>{{$loan->repay_amount}}</td>
         <td>{{$loan->outstanding_amount}}</td>
+        <td><a href="/loans/pending?approve_loan={{$loan->customer_id}}"><button class="btn-primary">Approve</button></a></td>
     </tr>
     @endforeach
 </table>

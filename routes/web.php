@@ -19,7 +19,7 @@ Route::post('/savings/{customer_Id?}/{action?}', 'SavingsController@StoreSavings
 //Route::get('/customers/{action?}', 'MainController@customers');
 Route::post('/customers/{customer_id?}/{action?}', 'CustomersController@StoreCustomer');
 //Route::get('/loans/{action?}', 'MainController@loans');
-Route::post('/loans/{customer_id?}', 'LoansController@StoreLoans');
+Route::post('/loans/{customer_id?}/{action?}', 'LoansController@StoreLoans');
 Route::get('/{section?}/{action?}/{customer_id?}', 'MainController@index');
 //Route::get('/staffs/{action?}', 'MainController@staffs');
 //Route::get('/home', 'MainController@index');

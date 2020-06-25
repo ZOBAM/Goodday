@@ -1,8 +1,17 @@
 @isset($variable_arr['customers'])
-<h5 class="card-title text-center">List of Customers</h5>
+<h3 class="card-title text-center">List of Customers</h3>
     <table class="table table-responsive table-striped table-hover">
+        <tr>
+            <th>S/N</th>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Account No.</th>
+            <th>Phone No.</th>
+            <th>Email</th>
+        </tr>
     @foreach($variable_arr['customers'] as $customer)
     <tr id="{{$customer->id}}" class="t-row">
+        <td>{{$loop->iteration}}</td>
         <td>{{$customer->first_name}}</td><td>{{$customer->surname}}</td><td>{{$customer->account_number}}</td><td>{{$customer->phone_number}}</td><td>{{$customer->email}}</td>
     </tr>
     @endforeach

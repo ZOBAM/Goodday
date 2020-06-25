@@ -1,6 +1,7 @@
 <?php
 namespace App\Classes;
-use App\{User,Customer,Balance,Transaction};
+use Carbon\Carbon;
+use App\{User,Customer,Balance,Transaction, Loan};
 use Auth;
 
 class CustomerClass {
@@ -8,25 +9,31 @@ class CustomerClass {
     private $min_loan_amount = 1000;// one thousand naira
     private $interest_rate = 20/100;// interest rate of 20%
     private $account_no;
-    private $balance;
+    //private $balance;
     private $transaction_ref;
     private $transaction_count;
     private $transaction;
     private $staff;
     private $customer;
     private $type;
+    private $subtype;
     private $amount;
     private $comment;
+    private $gday_balance;
 
-    public function __construct($type, $amount, $customer_id, $staff_id){
+    public function __construct($type, $subtype, $amount, $customer_id, $staff_id){
         $this->transaction_count = Transaction::count();
         $this->transaction = new Transaction;
-        $this->balance = new Balance;
+        $this->gday_balance = Balance::where('id',1)->first();
         $this->customer = Customer::where('id',$customer_id)->first();
         $this->staff = User::where('id',$staff_id)->first();
         $this->amount = $amount;
         $this->type = $type;
+        $this->subtype = $subtype;
         $this->comment = "Transaction of $this->amount was recorded";
+    }
+    public function set_customer($customer_id){
+        $this->customer = Customer::where('id',$customer_id)->first();
     }
     public function get_interest_rate(){
         return $this->interest_rate;
@@ -38,8 +45,11 @@ class CustomerClass {
     }//end get ad images
     public function get_transaction_ref(){//if title image is false, get all images of this ad
         switch ($this->type) {
-            case 'customer':
+            case 'customers':
                 $this->transaction_ref = 'CTM';
+                if($this->subtype = 'create'){
+                    $this->comment = $this->customer->full_name. " account was created by ".$this->staff->full_name;
+                }
                 break;
 
             case 'savings':
@@ -48,7 +58,15 @@ class CustomerClass {
 
             case 'loans':
                 $this->transaction_ref = 'LNS';
-                $this->comment = $this->customer->full_name. " Loan Application of N$this->amount was received via ".$this->staff->full_name;
+                if($this->subtype == 'create'){
+                    $this->comment = $this->customer->full_name. " Loan Application Fees of N$this->amount was received via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'approve'){
+                    $this->comment = $this->customer->full_name. " Loan Application was approved by ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'repay'){
+                    $this->comment = $this->customer->full_name. " paid N$this->amount for Loan Repayment and was collected by ".$this->staff->full_name;
+                }
                 break;
 
             default:
@@ -58,6 +76,16 @@ class CustomerClass {
         $this->transaction_ref .= $this->customer->id.'-ST'.$this->staff->id.'-'.str_pad(($this->transaction_count + 1),7,"0",STR_PAD_LEFT);
         return $this->transaction_ref;
     }//end get_transaction ref.
+    public function approve_loan(){
+        $this->customer->loan = Loan::where('customer_id',$this->customer->id)->first();
+        if($this->customer->loan){
+            $this->customer->loan->approval_date = Carbon::now();
+            $this->customer->loan->approved_by = $this->staff->id;
+            $this->customer->loan->save();
+            return true;
+        }
+    }
+    //save transaction in db
     public function save_transaction(){
         $this->transaction->ref_id = $this->get_transaction_ref();
         $this->transaction->type = $this->type;
@@ -66,6 +94,11 @@ class CustomerClass {
         if($this->transaction->save()){
             return true;
         }
+    }
+    //add to the company balance
+    public function update_account(){
+        $this->gday_balance->amount += $this->amount;
+        $this->gday_balance->save();
     }
 }
 ?>

@@ -11,9 +11,20 @@ use Auth;
 class LoansController extends Controller
 {
     public function StoreLoans(Request $request, $customer_id = false,$action = false){
+        //LOAN REPAYMENT
         if ($action == 'repay') {
-            return "repayment route reached!";
+            $loan_repayment = Loan_repayment::where('id', $customer_id)->first();
+            $loan_repayment->repaid = true;
+            $loan_repayment->defaulted = false;
+            $loan_repayment->approved_by = Auth::id();
+            if($loan_repayment->save()){
+                $customer_class = new CustomerClass('loans','repay',$loan_repayment->amount_repaid,Session()->get('current_customer')->id,$loan_repayment->approved_by);
+                $customer_class->save_transaction();
+                $customer_class->update_account();
+                return redirect('/loans/repayment');
+            }
         }
+        //NEW LOAN APPLICATION
         else{
             $this->validate($request, [
                 'amount'       => 'required|numeric|min:1000|max:200000',
@@ -25,12 +36,12 @@ class LoansController extends Controller
                 'paid_admin'        => 'required|string',
                 'paid_insurance'        => 'required|string',
             ]);
-            /* if($request->has('paid-admin')){
-                return "Paid admin!";
+            /* if($request->has('paid_admin')){
+                return $request->paid_admin;
             } */
             $customer = new Customer;
             $loan = new Loan;
-            $customer_class = new CustomerClass('loans',$request->amount,$customer_id,Auth::id());
+            $customer_class = new CustomerClass('loans','create',$request->paid_admin*2,$customer_id,Auth::id());
             $loan->amount = $request->amount;
             $loan->customer_id = $customer_id;
             $loan->repay_amount = $request->amount + ($request->amount * $customer_class->get_interest_rate());
@@ -43,6 +54,7 @@ class LoansController extends Controller
             $loan->first_repay_date = $request->first_repay_date;
             if($loan->save()){
                 $customer_class->save_transaction();
+                $customer_class->update_account();
                 //calculate the due date for repayment(s) and the unit repay amount
                 switch ($loan->repay_interval) {
                     case 'weekly':

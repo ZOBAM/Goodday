@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Customer, Saving, Savings_collection,Withdrawal,Balance,Loan};
-use App\Classes\{CustomerClass};
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use App\{Customer, Saving, Savings_collection, Withdrawal, Balance, Loan, Loan_repayment, Transaction, User};
+use App\Classes\{CustomerClass, TransactionClass};
 use Auth;
 
 class MainController extends Controller
@@ -36,6 +38,11 @@ class MainController extends Controller
 
     //the below function will handle the various links based on provided section
     public function index($section = false, $action = false, $id = false){
+        //check if the current customer already has a loan that is still running
+        if (session()->has('current_customer')) {
+            $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->first();
+            $variable_arr['current_customer_loan']? $variable_arr['has_loan'] = true : $variable_arr['has_loan'] = false;
+        }
         //end session
         if(isset($_GET['end_session'])){
             if($this->endCurrentSession()){
@@ -97,7 +104,7 @@ class MainController extends Controller
                             return redirect(url()->current());
                         }
                     }
-                    $action = $action? $action : 'collection';
+                    $action = $action? $action : 'create';
                     $section_nav = [
                         'Create Saving'          =>  '/savings/create',
                         'Add Collection'     =>  '/savings/collection',
@@ -118,6 +125,11 @@ class MainController extends Controller
                     }
                 break;
                 case 'loans'://HANDLE LOAN SECTION
+                    if(!$variable_arr['session_isset']){
+                        if($this->SetCurrentCustomer()){
+                            return redirect(url()->current());
+                        }
+                    }
                     $action = $action? $action : 'repayment';
                     $section_nav = [
                         'New Loan Application'  =>  '/loans/create',
@@ -126,21 +138,64 @@ class MainController extends Controller
                         'Loan Repayment'        =>  '/loans/repayment'
                     ];
                     switch($action){
+                        case 'create':
+                            $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                        break;
                         case 'pending':
                             $variable_arr['pending_loans'] = Loan::where('approval_date',null)->paginate(7);
+                            $variable_arr['heading'] = "List of Loans Awaiting Approval $ Disbursement";
+                            if(isset($_GET['approve_loan']) && is_numeric($_GET['approve_loan'])){
+                                $customer_class = new CustomerClass('loans','approve',0,$_GET['approve_loan'],Auth::id());
+                                if($customer_class->approve_loan()){
+                                    $customer_class->save_transaction();
+                                    session()->flash('info', 'Task was successful!');
+                                    return redirect(url()->current());
+                                }
+                                else{
+                                    return "Approval failed";
+                                }
+                            }
                         break;
                         case 'approved':
                            $variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
+                           $variable_arr['heading'] = "List of Approved Loans";
+                        break;
+                        case 'repayment':
+                           $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                           if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
+                            $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->get();
+                           }
                         break;
                     }
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
-                    $action = 'view';
+                    $transaction_class = new TransactionClass(10);
                     $section_nav = [
-                        'Today'          =>  '/transactions/today',
-                        'This Week'     =>  '/transactions/week',
-                        'This Month'    =>  '/transactions/month',
+                        'Today\'s Transactions'          =>  '/transactions/today',
+                        'This Week\'s Transactions'     =>  '/transactions/week',
+                        'This Month\'s Transactions'    =>  '/transactions/month',
                     ];
+                    switch ($action) {
+                        case 'today':
+                            //return 1;
+                            $variable_arr['transactions'] = $transaction_class->get_today();
+                            $variable_arr['heading'] = "List of Transactions for Today";
+                            break;
+
+                        case 'week':
+                            $variable_arr['transactions'] = $transaction_class->get_week();
+                            $variable_arr['heading'] = "List of Transactions for This Week";
+                            break;
+
+                        case 'month':
+                            $variable_arr['transactions'] = $transaction_class->get_month();
+                            $variable_arr['heading'] = "List of Transactions for This Month";
+                            break;
+
+                        default:
+                            return redirect('/transactions/today');
+                            break;
+                    }
                 break;
                 case 'staffs'://HANDLE STAFF SECTION
                     $action = $action? $action : 'create';

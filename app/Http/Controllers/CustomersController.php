@@ -34,7 +34,7 @@ class CustomersController extends Controller
             $customer =new Customer;
             $redirect_ur = "/customers/view/$customer->id?new=1";
             //create customer account no. for new account
-            $customer_class = new CustomerClass;
+            $customer_class = new CustomerClass('customers','create',0,0,Auth::id());
             $customer->account_number   = $customer_class->get_account_no($customer->id);
         }
         $customer->staff_id         = Auth::id();
@@ -52,10 +52,14 @@ class CustomersController extends Controller
         $customer->poverty_index    = $request->poverty_index;
         $customer->gender           = $request->gender;
         if($customer->save()){
-            //initialize the account balance to 0
-            $balance = new Balance;
-            $balance->customer_id = $customer->id;
-            $balance->save();
+            if(!$customer_id){
+                $customer_class->set_customer($customer->id);
+                $customer_class->save_transaction();
+                //initialize the account balance to 0
+                $balance = new Balance;
+                $balance->customer_id = $customer->id;
+                $balance->save();
+            }
             //check if image was uploaded and process it.
             if ($request->hasFile('customer_passport')){
                 $image = $request->file('customer_passport');

@@ -28,7 +28,11 @@
                     @endif
                 </div>
                 <div class="card-body">
-                    @include($section.'.'.$action)
+                    @if($section =='transactions')
+                        @include($section.'.view')
+                    @else
+                        @include($section.'.'.$action)
+                    @endif
                 </div>
             </div>
         </div>
