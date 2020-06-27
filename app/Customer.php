@@ -9,9 +9,9 @@ class Customer extends Model
     public function loan(){
         return $this->hasMany('App\Loan');
     }
-    public function saving(){
+    /* public function saving(){
         return $this->hasMany('App\Saving');
-    }
+    } */
     //get full name
     public function getFullNameAttribute(){
         return "{$this->surname} {$this->first_name}";

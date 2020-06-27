@@ -21,7 +21,7 @@ class CustomerClass {
     private $comment;
     private $gday_balance;
 
-    public function __construct($type, $subtype, $amount, $customer_id, $staff_id){
+    public function __construct($type, $subtype, $amount, $customer_id, $staff_id,$update_account){
         $this->transaction_count = Transaction::count();
         $this->transaction = new Transaction;
         $this->gday_balance = Balance::where('id',1)->first();
@@ -31,6 +31,9 @@ class CustomerClass {
         $this->type = $type;
         $this->subtype = $subtype;
         $this->comment = "Transaction of $this->amount was recorded";
+        if($update_account){
+            $this->update_account();
+        }
     }
     public function set_customer($customer_id){
         $this->customer = Customer::where('id',$customer_id)->first();
@@ -54,6 +57,18 @@ class CustomerClass {
 
             case 'savings':
                 $this->transaction_ref = 'SVS';
+                if($this->subtype == 'create'){
+                    $this->comment = $this->customer->full_name. " Started a new Saving Cycle via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'collection'){
+                    $this->comment = $this->customer->full_name. " saved $this->amount via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'disburse'){
+                    $this->comment = $this->customer->full_name. " withdrew the sum of N".abs($this->amount)." via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'close'){
+                    $this->comment = $this->customer->full_name. " closed saving of N".abs($this->amount)." via ".$this->staff->full_name;
+                }
                 break;
 
             case 'loans':
@@ -65,7 +80,7 @@ class CustomerClass {
                     $this->comment = $this->customer->full_name. " Loan Application was approved by ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'repay'){
-                    $this->comment = $this->customer->full_name. " paid N$this->amount for Loan Repayment and was collected by ".$this->staff->full_name;
+                    $this->comment = $this->customer->full_name. " paid N$this->amount Loan Repayment via ".$this->staff->full_name;
                 }
                 break;
 

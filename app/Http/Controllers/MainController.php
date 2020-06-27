@@ -12,10 +12,10 @@ use Auth;
 class MainController extends Controller
 {
     //set customer session
-    public function SetCurrentCustomer(){
-        if(isset($_GET['account_number']) && is_numeric($_GET['account_number'])){
-            $account_number = 'GD'.$_GET['account_number'];
-            $customer = Customer::where('account_number',$account_number)->first();
+    public function SetCurrentCustomer($customer_id = false){
+        if((isset($_GET['account_number']) && is_numeric($_GET['account_number']) || $customer_id)){
+            $account_number = $_GET['account_number']?? '';
+            $customer = $customer_id? Customer::where('id',$customer_id)->first() : Customer::where('account_number',$account_number)->first();
             if(!$customer){
                 return false;
             }
@@ -75,13 +75,14 @@ class MainController extends Controller
                         break;
                         case 'view':
                             if(is_numeric($id)){
+                                //return $id;
                                 $variable_arr['new_customer'] = false;
                                 if(isset($_GET['new'])){
                                     $variable_arr['new_customer'] = true;
                                 }
                                 $variable_arr['customer'] = Customer::findOrFail($id);
                                 //set current customer session
-                                $this->SetCurrentCustomer($variable_arr['customer']);
+                                $this->SetCurrentCustomer($id);
                             }
                             else{
                                 $variable_arr['customers'] = Customer::get();
@@ -94,9 +95,6 @@ class MainController extends Controller
                 break;
                 case 'savings'://HANDLE SAVING SECTION
                     $variable_arr['require_session'] = true;
-                    if ($variable_arr['session_isset']) {
-                        $variable_arr['saving'] = Saving::where('customer_id',Session()->get('current_customer')->id)->first();
-                    }
                     //$variable_arr['unit_amount'] = $variable_arr['unit_amount']->unit_amount;
                     //return $variable_arr['unit_amount'];
                     if(!$variable_arr['session_isset']){
@@ -104,7 +102,10 @@ class MainController extends Controller
                             return redirect(url()->current());
                         }
                     }
-                    $action = $action? $action : 'create';
+                    if ($variable_arr['session_isset']) {
+                        $variable_arr['saving'] = Saving::where('cycle_complete',false)->where('customer_id',Session()->get('current_customer')->id)->first();
+                        $variable_arr['saving_cycle'] = Saving::where('customer_id',Session()->get('current_customer')->id)->count() + 1;
+                    }
                     $section_nav = [
                         'Create Saving'          =>  '/savings/create',
                         'Add Collection'     =>  '/savings/collection',
@@ -179,16 +180,19 @@ class MainController extends Controller
                         case 'today':
                             //return 1;
                             $variable_arr['transactions'] = $transaction_class->get_today();
+                            $variable_arr['transactions_total'] = $transaction_class->get_total();
                             $variable_arr['heading'] = "List of Transactions for Today";
                             break;
 
                         case 'week':
                             $variable_arr['transactions'] = $transaction_class->get_week();
+                            $variable_arr['transactions_total'] = $transaction_class->get_total();
                             $variable_arr['heading'] = "List of Transactions for This Week";
                             break;
 
                         case 'month':
                             $variable_arr['transactions'] = $transaction_class->get_month();
+                            $variable_arr['transactions_total'] = $transaction_class->get_total();
                             $variable_arr['heading'] = "List of Transactions for This Month";
                             break;
 

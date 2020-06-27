@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'HomePageController@index')->name('homepage');
 Auth::routes();
 //Route::get('/savings/{action?}', 'MainController@savings');
-Route::post('/savings/{customer_Id?}/{action?}', 'SavingsController@StoreSavings');
+Route::post('/savings/{customer_Id?}/{action?}', 'SavingsController@StoreSavings')->middleware('auth');
 //Route::get('/customers/{action?}', 'MainController@customers');
-Route::post('/customers/{customer_id?}/{action?}', 'CustomersController@StoreCustomer');
+Route::post('/customers/{customer_id?}/{action?}', 'CustomersController@StoreCustomer')->middleware('auth');
 //Route::get('/loans/{action?}', 'MainController@loans');
-Route::post('/loans/{customer_id?}/{action?}', 'LoansController@StoreLoans');
-Route::get('/{section?}/{action?}/{customer_id?}', 'MainController@index');
+Route::post('/loans/{customer_id?}/{action?}', 'LoansController@StoreLoans')->middleware('auth');
+Route::get('/{section?}/{action?}/{customer_id?}', 'MainController@index')->middleware('auth');
 //Route::get('/staffs/{action?}', 'MainController@staffs');
 //Route::get('/home', 'MainController@index');
 
