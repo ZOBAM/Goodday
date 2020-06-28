@@ -86,6 +86,15 @@ class MainController extends Controller
                             }
                             else{
                                 $variable_arr['customers'] = Customer::get();
+                                foreach($variable_arr['customers'] as $customer){
+                                    $balance = Balance::where('customer_id',$customer->id)->first();
+                                    if($balance){
+                                        $customer->balance = $balance->amount;
+                                    }
+                                    else{
+                                        $customer->balance = 0;
+                                    }
+                                }
                             }
                         break;
                         default:

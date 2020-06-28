@@ -3,16 +3,22 @@
     <table class="table table-responsive table-striped table-hover">
         <tr>
             <th>S/N</th>
-            <th>First Name</th>
-            <th>Surname</th>
+            <th>Full Name</th>
             <th>Account No.</th>
             <th>Phone No.</th>
             <th>Email</th>
+            <th>Balance</th>
+            <th>Date Created</th>
         </tr>
     @foreach($variable_arr['customers'] as $customer)
     <tr id="{{$customer->id}}" class="t-row">
         <td>{{$loop->iteration}}</td>
-        <td>{{$customer->first_name}}</td><td>{{$customer->surname}}</td><td>{{$customer->account_number}}</td><td>{{$customer->phone_number}}</td><td>{{$customer->email}}</td>
+        <td>{{$customer->full_name}}</td>
+        <td>{{$customer->account_number}}</td>
+        <td>{{$customer->phone_number}}</td>
+        <td>{{$customer->email}}</td>
+        <td>{{$customer->balance}}</td>
+        <td>{{$customer->created_at}}</td>
     </tr>
     @endforeach
     </table>
