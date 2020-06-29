@@ -16,4 +16,9 @@ class Customer extends Model
     public function getFullNameAttribute(){
         return "{$this->surname} {$this->first_name}";
     }
+    //set default passport for staffs
+    public function getPassportAttribute(){
+        $passport = $this->passport_link == null? "customer_img_placeholder.png" : $this->passport_link;
+        return $passport;
+    }
 }

@@ -10,8 +10,8 @@
         {{ csrf_field() }}
         <div class="row">
             <div class = "col-sm-4 offset-sm-4">
-                <div style="width: 100px; height: 100px; background-color: cornflowerblue; margin: auto;">
-                    <img src="{{asset('/images/male_avatar.png')}}" alt="" id="place_holder" style="max-width: 100px;max-height: 100px;">
+                <div style="width: 100px; height: 100px; background-color: white; margin: auto;">
+                    <img src="{{asset('/images/customers/'.$customer->passport)}}" alt="" id="place_holder" style="max-width: 100px;max-height: 100px;">
                 </div>
                 <input type="file" class="form-control-file" id="customer_passport" name="customer_passport" hidden>
             </div>

@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/vue.js') }}"></script>
+    <script src="{{ asset('js/all.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -54,20 +55,20 @@
                                 @endif
                             @else
                                 <li class="nav-item">
-                                    <a href="/customers" class="nav-link"><i class="fas fa-heart"></i> Customers</a>
+                                    <a href="/customers" class="nav-link"><i class="fas fa-address-book"></i> Customers</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/savings" class="nav-link"><i class="fas fa-heart"></i> Savings</a>
+                                    <a href="/savings" class="nav-link"><i class="fas fa-tree"></i> Savings</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/loans" class="nav-link"><i class="fas fa-heart"></i> Loan</a>
+                                    <a href="/loans" class="nav-link"><i class="fas fa-money-check"></i> Loan</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/transactions" class="nav-link"><i class="fas fa-heart"></i> Transactions</a>
+                                    <a href="/transactions" class="nav-link"><i class="fas fa-book"></i> Transactions</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                        {{ Auth::user()->first_name }} <span class="caret"></span>
+                                        <i class="fas fa-user"></i> {{ Auth::user()->first_name }} <span class="caret"></span>
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -81,6 +82,10 @@
                                             @csrf
                                         </form>
                                     </div>
+                                </li>
+                                <li class="nav-item"><span class="navbar-text">
+                                    <img src="{{ asset('images/staffs/'.Auth::user()->passport ) }}" alt="good day logo" width = "20px">
+                                    </span>
                                 </li>
                             @endguest
                         </ul>

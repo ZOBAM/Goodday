@@ -42,4 +42,10 @@ class User extends Authenticatable
         return "{$this->surname} {$this->first_name}";
     }
 
+    //set default passport for staffs
+    public function getPassportAttribute(){
+        $passport = $this->passport_link == null? "staff_img_placeholder.png" : $this->passport_link;
+        return $passport;
+    }
+
 }

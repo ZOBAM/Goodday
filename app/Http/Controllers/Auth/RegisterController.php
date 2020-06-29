@@ -56,8 +56,7 @@ class RegisterController extends Controller
             'phone_number' => ['required', 'string', 'max:255'],
             'bvn' => ['required', 'numeric', 'min:100000000000'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'designation' => ['string', 'max:255'],
-            'passport_link' => ['string', 'max:255'],
+            'passport' => ['image', 'mimes:jpeg,png,jpg', 'max:2024'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -70,14 +69,31 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'first_name' => $data['first_name'],
             'surname' => $data['surname'],
             'other_name' => $data['other_name'],
             'phone_number' => $data['phone_number'],
             'bvn' => $data['bvn'],
             'email' => $data['email'],
+            'designation' => 'staff',
             'password' => Hash::make($data['password']),
         ]);
+        //check if image was uploaded and process it.
+        if (isset($data['passport'])){
+            $image = $data['passport'];
+            $imageName = time().'_goodday_staff'.$user->id.'.'.$image->getClientOriginalExtension();
+            $move_path = (is_dir(public_path('../../public/images/')))? public_path('../../public/images/staffs/'):'images/staffs/' ;
+            //check if the customer already has an image in the directory and delete before adding new one
+            /* if($customer_id){
+                if(file_exists($move_path.'/'.$customer->passport_link)){
+                    unlink($move_path.'/'.$customer->passport_link);
+                }
+            } */
+            $image->move($move_path, $imageName);
+            $user->passport_link = $imageName;
+            $user->save();
+        }
+        return $user;
     }
 }

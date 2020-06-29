@@ -15,9 +15,21 @@
                       @endforeach
                   </ul>
                     @endif
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                         @csrf
 
+                        <div class="form-group row">
+                            <label for="first_name" class="col-md-4 col-form-label text-md-right">{{ __('Staff Passport') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="passport" type="file" class="form-control @error('passport') is-invalid @enderror" name="passport" value="{{ old('passport') }}" required >
+                                @error('passport')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="form-group row">
                             <label for="first_name" class="col-md-4 col-form-label text-md-right">{{ __('First Name') }}</label>
 
@@ -117,7 +129,7 @@
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
+                                    {{ __('Create Staff Account') }}
                                 </button>
                             </div>
                         </div>

@@ -15,7 +15,7 @@ class MainController extends Controller
     public function SetCurrentCustomer($customer_id = false){
         if((isset($_GET['account_number']) && is_numeric($_GET['account_number']) || $customer_id)){
             $account_number = $_GET['account_number']?? '';
-            $customer = $customer_id? Customer::where('id',$customer_id)->first() : Customer::where('account_number',$account_number)->first();
+            $customer = $customer_id? Customer::where('id',$customer_id)->first() : Customer::where('account_number','GD'.$account_number)->first();
             if(!$customer){
                 return false;
             }
