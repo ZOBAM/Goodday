@@ -5,7 +5,9 @@
             {{Session()->get('current_customer')->full_name}}
         </div>
     </div>
-    @if($variable_arr['saving'])
+    @if(session()->has('info'))
+        @include('layouts.notification')
+    @elseif($variable_arr['saving'])
     <div class="col-sm-12 alert alert-primary" role="alert">
         <p><strong>Saving Exist:</strong>  There is an ongoing Saving for this Customer. If you want to start a new Saving then close the Current Saving Cycle.</p>
     </div>

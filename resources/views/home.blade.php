@@ -7,7 +7,7 @@
         <div class = 'col-sm-3' id="left-nav">
             <nav class="nav flex-column" >
                 @foreach($section_nav as $name => $link)
-                <a class="nav-link" href="{{$link}}">{{$name}}</a>
+                <a class="nav-link {{ isset($section_nav[$name]['nav_link_active'])? 'active':'' }}" href="{{$link['link']}}"><i class="fas fa-{{$link['icon']}}"></i> {{$name}}</a>
                 @endforeach
                 <!-- <a class="nav-link active" href="#">Manage Customers</a> -->
             </nav>
@@ -18,7 +18,8 @@
         <div class="col-sm-9" id="main-content">
             <div class="card">
                 <div class="card-header">
-                    {{$variable_arr['card_header']}}
+                    <!-- {{$variable_arr['card_header']}} -->
+                    {{Session()->get('current_customer')->full_name?? 'Customer Area'}}
                     @if($variable_arr['session_isset'])
                     <span class="float-right">
                         <a href="{{url()->current().'?end_session=1'}}">

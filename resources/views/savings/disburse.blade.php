@@ -9,6 +9,8 @@
     <div class="col-sm-12 alert alert-primary" role="alert">
         <p><strong>No Active Saving:</strong> There is no  current Saving for this customer. Create a new saving before you can make withdrawals from it.</p>
     </div>
+    @elseif(session()->has('info'))
+        @include('layouts.notification')
     @else
     <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{Session()->get('current_customer')->id}}/disburse">

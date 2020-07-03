@@ -18,10 +18,19 @@ class LoansController extends Controller
             $loan_repayment->defaulted = false;
             $loan_repayment->approved_by = Auth::id();
             if($loan_repayment->save()){
-                $customer_class = new CustomerClass('loans','repay',$loan_repayment->amount_repaid,Session()->get('current_customer')->id,$loan_repayment->approved_by);
+                $loan = Loan::where('id',$loan_repayment->loan_id)->first();
+                $loan->outstanding_amount -= $loan_repayment->amount_repaid;
+                $loan->disbursed_date = Carbon::now();
+                if($loan->outstanding_amount == 0){
+                    $loan->loan_cleared = true;
+                }
+                $loan->save();
+                $customer_class = new CustomerClass('loans','repay',$loan_repayment->amount_repaid,Session()->get('current_customer')->id,$loan_repayment->approved_by,false);
                 $customer_class->save_transaction();
                 $customer_class->update_account();
-                return redirect('/loans/repayment');
+                //Session()->flash('info','Loan repayment has been successfully saved.');
+                session()->flash('info','Loan repayment has been successfully saved.');
+                return back();
             }
         }
         //NEW LOAN APPLICATION
@@ -41,7 +50,7 @@ class LoansController extends Controller
             } */
             $customer = new Customer;
             $loan = new Loan;
-            $customer_class = new CustomerClass('loans','create',$request->paid_admin*2,$customer_id,Auth::id());
+            $customer_class = new CustomerClass('loans','create',$request->paid_admin*2,$customer_id,Auth::id(),false);
             $loan->amount = $request->amount;
             $loan->customer_id = $customer_id;
             $loan->repay_amount = $request->amount + ($request->amount * $customer_class->get_interest_rate());
@@ -92,7 +101,8 @@ class LoansController extends Controller
                     $loan_repayment->defaulted = false;
                     $loan_repayment->save();
                 }
-                return "Store loan route reached, application saved and transaction recorded!";
+                session()->flash('info','Loan Application has been successfully saved.');
+                return back();
             }
         }
     }//endstoreLoans

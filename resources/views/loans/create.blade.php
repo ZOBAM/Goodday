@@ -5,7 +5,9 @@
         <h2>Creating a New Loan Application</h2>
     </div>
 </div>
-    @if($variable_arr['has_loan'])
+    @if(session()->has('info'))
+        @include('layouts.notification')
+    @elseif($variable_arr['has_loan'])
     <div class="alert alert-primary" role="alert">
         <p>One customer cannot have two running loans at the same time.</p>
         <p>Clear outstanding repayment of current loan before  applying for another one</p>

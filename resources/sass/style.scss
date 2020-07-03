@@ -1,3 +1,4 @@
+$whatsapp_bg:#008B8B;
 body{
     background-image: url('/images/gdbody_bg.png');
     background-size: cover;
@@ -19,8 +20,35 @@ nav.navbar{
     background-image: url('/images/gdleft_nav_bg.png');
     background-size: cover;
     border-bottom-right-radius: 6vh;
-    a{
-        border-bottom: 1px solid rgb(243, 252, 243);
+    a:link{
+        border-bottom: 11px solid rgb(39, 58, 39);
+    }
+    a:hover{
+        background-color: blue($color: #000000);
+    }
+    a:first-child{
+        margin-top: 1em;
+    }
+    .active{
+            border: 2px solid #638193;
+        }
+}
+#customer-details{
+    width: 100%;
+    //text-align: center;
+    table{
+        width: auto;
+        margin: auto;
+        td:nth-child(odd){
+            color: rgb(60, 37, 87);
+            text-align: right;
+            font-weight: bold;
+            border: 1px solid blue;
+        }
+    }
+    .name{
+        text-align: right;
+        color: purple;
     }
 }
 footer{
@@ -47,7 +75,7 @@ footer{
     max-height: 75vh;
     min-height: 65vh;
     a{
-        border-bottom: 1px solid rgb(243, 252, 243);
+        //border-bottom: 1px solid rgb(243, 252, 243);
     }
 }
 footer{

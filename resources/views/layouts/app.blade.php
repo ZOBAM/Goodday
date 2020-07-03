@@ -26,7 +26,7 @@
 <body>
     <div id="app">
         <header >
-            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-sm navbar-light bg-white shadow-sm">
                 <div class="container">
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="{{ asset('images/gdaylogo.png') }}" alt="good day logo">
@@ -42,33 +42,33 @@
                         </ul>
 
                         <!-- Right Side Of Navbar -->
-                        <ul class="navbar-nav ml-auto">
+                        <ul class="navbar-nav ml-auto" style="text-align:center">
                             <!-- Authentication Links -->
                             @guest
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}"><i class = "fas fa-lock"></i> {{ __('Staff Login') }}</a>
                                 </li>
                                 @if (Route::has('register'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{{ route('register') }}"><i class = "fas fa-user-plus"></i> {{ __('Register') }}</a>
                                     </li>
                                 @endif
                             @else
-                                <li class="nav-item">
+                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
                                     <a href="/customers" class="nav-link"><i class="fas fa-address-book"></i> Customers</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
                                     <a href="/savings" class="nav-link"><i class="fas fa-tree"></i> Savings</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
                                     <a href="/loans" class="nav-link"><i class="fas fa-money-check"></i> Loan</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
                                     <a href="/transactions" class="nav-link"><i class="fas fa-book"></i> Transactions</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                        <i class="fas fa-user"></i> {{ Auth::user()->first_name }} <span class="caret"></span>
+                                    <img src="{{ asset('images/staffs/'.Auth::user()->passport ) }}" alt="good day logo" width = "20px"> {{ Auth::user()->first_name }} <span class="caret"></span>
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -83,10 +83,10 @@
                                         </form>
                                     </div>
                                 </li>
-                                <li class="nav-item"><span class="navbar-text">
+                               <!--  <li class="nav-item"><span class="navbar-text">
                                     <img src="{{ asset('images/staffs/'.Auth::user()->passport ) }}" alt="good day logo" width = "20px">
                                     </span>
-                                </li>
+                                </li> -->
                             @endguest
                         </ul>
                     </div>

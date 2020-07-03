@@ -11,6 +11,9 @@
     </div>
 </div>
     @if($variable_arr['has_loan'])
+        @if(session()->has('info'))
+            @include('layouts.notification')
+        @endif
         <h5 class="card-title text-center">Below are Outstanding Loan Repayments </h5>
        <!--  <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/loans/{{Session()->get('current_customer')->id}}/repay">
             {{ csrf_field() }}

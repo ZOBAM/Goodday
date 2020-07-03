@@ -14,14 +14,14 @@ class CustomersController extends Controller
             'first_name'        => 'required|string|min:3|max:35',
             'surname'           => 'required|string|min:3|max:35',
             'other_name'        => 'required|string|min:3|max:35',
-            'phone_number'      => 'required|string|max:14|min:11',
+            'phone_number'      => 'required|string|max:14|min:11|unique:App\Customer,phone_number',
             'next_of_kin'       => 'required|string|min:3|max:35',
             'nok_relationship'  => 'required|string|max:8|min:5',
             'state'             => 'required|string|max:20|min:3',
             'lga'               => 'required|string|max:20|min:3',
             'community'         => 'required|string|max:40|min:3',
             'full_address'      => 'required|string|max:200|min:6',
-            'email'             => 'nullable|email|max:100|min:5',
+            'email'             => 'nullable|email|max:100|min:5|unique:App\Customer,phone_number',
             'poverty_index'     => 'nullable|numeric|max:100|min:3',
             'gender'            => 'required|string|max:6|min:4',
             'customer_passport' => 'image|mimes:jpeg,png,jpg|max:2048',
@@ -34,7 +34,7 @@ class CustomersController extends Controller
             $customer =new Customer;
             $redirect_ur = "/customers/view/$customer->id?new=1";
             //create customer account no. for new account
-            $customer_class = new CustomerClass('customers','create',0,0,Auth::id());
+            $customer_class = new CustomerClass('customers','create',0,0,Auth::id(),false);
             $customer->account_number   = $customer_class->get_account_no($customer->id);
         }
         $customer->staff_id         = Auth::id();
@@ -75,7 +75,9 @@ class CustomersController extends Controller
                 $customer->passport_link = $imageName;
                 $customer->save();
             }
-            return redirect($redirect_ur);
+            session()->flash('info','Account details successfully saved.');
+            return back();
+            //return redirect($redirect_ur);
         }
     }
 }

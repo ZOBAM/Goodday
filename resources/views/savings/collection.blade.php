@@ -9,8 +9,9 @@
     <div class="col-sm-12 alert alert-primary" role="alert">
         <p><strong>Create Saving First:</strong> There is no  current Saving for this customer. Create a new saving before you can add collections to it.</p>
     </div>
+    @elseif(session()->has('info'))
+        @include('layouts.notification')
     @else
-    <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{ $variable_arr['saving']->id }}/collection">
         {{ csrf_field() }}
         <div class="row">
@@ -50,6 +51,21 @@
         </div>
     </form>
     @endif
+        @if(count(Session()->get('current_customer')->savings)>0)
+        <h2 class="text-center">Recent Savings</h2>
+        <div class="table-responsive">
+            <table class="table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="2">Customer's Details</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Name:</td><td></td>
+                </tr>
+            </table>
+        </div>
+        @endif
 @else
     <!-- The customer object is not yet set and therefore display the form for getting customer ID -->
     @include('layouts.set_customer_session')

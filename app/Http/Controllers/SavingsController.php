@@ -39,7 +39,8 @@ class SavingsController extends Controller
                 //record transaction
                 $this->record_transaction('savings','collection',$collection->amount_saved,Session()->get('current_customer')->id,Auth::id());
             }
-            return "Collection submitted";
+            session()->flash('info','Saving successfully recorded.');
+            return back();
         }
         //HANDLE DISBURSING
         elseif ($action == 'disburse') {
@@ -65,7 +66,8 @@ class SavingsController extends Controller
                     $balance->save();
                     //record transaction
                     if($this->record_transaction('savings','disburse',0 - $withdrawal->amount_withdrawn,$customer_id,Auth::id())){
-                        return "Cash disbursed!";
+                        session()->flash('info','Withdrawal successfully recorded.');
+                        return back();
                     };
                 }
             }
@@ -90,7 +92,8 @@ class SavingsController extends Controller
                 $balance->save();
                 if($this->record_transaction('savings','close',0 - $saving->withdrawable_amount,$customer_id,Auth::id())){
                     $this->record_transaction('savings','collection', $saving->unit_amount,1,Auth::id(),true);
-                    return "closing saving account";
+                    session()->flash('info','Saving Cycle successfully closed.');
+                    return back();
                 }
             }
         }
@@ -114,7 +117,8 @@ class SavingsController extends Controller
             $saving->withdrawable_amount    = 0 - $saving->unit_amount;
             if($saving->save()){
                 $this->record_transaction('savings','create',0,$customer_id,$saving->created_by);
-                return "Store savings route reached and saving succeeded!";
+                session()->flash('info','New Saving Cycle successfully created.');
+                return back();
             }
         }
     }

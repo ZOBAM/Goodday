@@ -23,6 +23,7 @@ class HomePageController extends Controller
      */
     public function index()
     {
-        return view('goodday');
+        $variable_arr['navbar_link_active'] = false;
+        return view('goodday',compact('variable_arr'));
     }
 }

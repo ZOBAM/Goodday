@@ -1,7 +1,19 @@
 @if(count($variable_arr['transactions'])>0)
 <div class="row">
-    <div class="col-sm-8 offset-sm-2 text-center">
+    <div class="col-sm-12 text-center">
         <h2>{{$variable_arr['heading']}}<sup>({{$variable_arr['transactions']->total()}})</sup></h2>
+    </div>
+    <div class="col-sm-12">
+        <form id="account_id">
+                    <div class="row">
+                        <div class="col-sm-6 offset-sm-3">
+                            <select class="custom-select" name="staff_id" id="staff_id" autofocus>
+                                <option value="">Select Staff</option>
+                                <option value="1">Mathew Hamsa</option>
+                            </select>
+                        </div>
+                    </div>
+        </form>
     </div>
 </div>
 <table class="table table-responsive table-striped table-hover">
@@ -39,6 +51,11 @@ There is currently no Transactions for today to display.
 @endif
 @section('footerLinks')
 <script>
+    $('#staff_id').change(function(){
+        location = location.href+'?staff_id='+$(this).val();
+        //alert($(this).val());
+        //alert(location.href);
+    })
 var th = ['','thousand','million', 'billion','trillion'];
 var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine'];
  var tn = ['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen', 'seventeen','eighteen','nineteen'];
@@ -63,7 +80,7 @@ function toWords(s) {
                 i++;
                 sk=1;
             } else if (n[i]!=0) {
-                str += 'and ' + tw[n[i]-2] + ' ';
+                str += /* 'and '  +*/ tw[n[i]-2] + ' ';
                 sk=1;
             }
         } else if (n[i]!=0) { // 0235

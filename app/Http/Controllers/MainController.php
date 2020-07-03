@@ -20,6 +20,9 @@ class MainController extends Controller
                 return false;
             }
             else{//set current customer session
+                $savings = Saving::where('customer_id',$customer->id)->get();
+                //return $savings;
+                $customer->savings = $savings;
                 session(['current_customer' => $customer]);
                 return true;
                 //return url()->current();
@@ -38,6 +41,10 @@ class MainController extends Controller
 
     //the below function will handle the various links based on provided section
     public function index($section = false, $action = false, $id = false){
+        //set active (for css link class) to false for all
+        $variable_arr['navbar_link_active'] = false;
+        //get staffs from db
+        $variable_arr['staffs'] = User::get();
         //check if the current customer already has a loan that is still running
         if (session()->has('current_customer')) {
             $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->first();
@@ -54,18 +61,23 @@ class MainController extends Controller
         $variable_arr['session_isset'] = session()->has('current_customer')? true : false;
         $sections = ['customers','savings','loans','staffs','transactions'];
         if(in_array($section,$sections)){
+            $variable_arr['nav_link_active'] = false;
             switch($section){
                 case 'customers'://HANDLE CUSTOMER SECTION
                     $action = $action? $action : 'view';
                     $section_nav = [
-                        'Create Account'          =>  '/customers/create',
-                        'Update Account'     =>  '/customers/edit',
-                        'View Account'    =>  '/customers/view',
+                        'Create New Account'          =>  ['link' => '/customers/create','icon' => 'user-plus'],
+                        'Update Customer Account'     =>  ['link' => '/customers/edit','icon' => 'user-edit'],
+                        'View Customers Accounts'    =>  ['link' => '/customers/view','icon' => 'eye'],
                     ];
                     switch($action){
                         case 'create':
+                            $section_nav['Create New Account']['nav_link_active'] = true;
+                            $variable_arr['nav_link_active'] = true;
                         break;
                         case 'edit':
+                            $section_nav['Update Customer Account']['nav_link_active'] = true;
+                            $variable_arr['nav_link_active'] = true;
                             $variable_arr['require_session'] = true;
                             if(!$variable_arr['session_isset']){
                                 if($this->SetCurrentCustomer()){
@@ -74,6 +86,8 @@ class MainController extends Controller
                             }
                         break;
                         case 'view':
+                            $section_nav['View Customers Accounts']['nav_link_active'] = true;
+                            $variable_arr['nav_link_active'] = false;
                             if(is_numeric($id)){
                                 //return $id;
                                 $variable_arr['new_customer'] = false;
@@ -81,6 +95,8 @@ class MainController extends Controller
                                     $variable_arr['new_customer'] = true;
                                 }
                                 $variable_arr['customer'] = Customer::findOrFail($id);
+                                $balance = Balance::where('customer_id',$id)->first();
+                                $variable_arr['customer']->balance = $balance->amount??0;
                                 //set current customer session
                                 $this->SetCurrentCustomer($id);
                             }
@@ -107,6 +123,7 @@ class MainController extends Controller
                     //$variable_arr['unit_amount'] = $variable_arr['unit_amount']->unit_amount;
                     //return $variable_arr['unit_amount'];
                     if(!$variable_arr['session_isset']){
+                        //return $this->SetCurrentCustomer();
                         if($this->SetCurrentCustomer()){
                             return redirect(url()->current());
                         }
@@ -116,19 +133,24 @@ class MainController extends Controller
                         $variable_arr['saving_cycle'] = Saving::where('customer_id',Session()->get('current_customer')->id)->count() + 1;
                     }
                     $section_nav = [
-                        'Create Saving'          =>  '/savings/create',
-                        'Add Collection'     =>  '/savings/collection',
-                        'Disburse'    =>  '/savings/disburse',
-                        'Close Saving'    =>  '/savings/close_saving'
+                        'Start New Saving'          =>  ['link' => '/savings/create','icon' => 'plus'],
+                        'Record Saving Collection'     =>  ['link' => '/savings/collection','icon' => 'money-bill-alt'],
+                        'Withdraw From Saving'    =>  ['link' => '/savings/disburse','icon' => 'money-bill'],
+                        'Close Saving'    =>  ['link' => '/savings/close_saving','icon' => 'circle-notch']
                     ];
                     switch($action){
                         case 'create':
+                            $section_nav['Start New Saving']['nav_link_active'] = true;
+                            //return $section_nav;
                         break;
                         case 'collection':
+                            $section_nav['Record Saving Collection']['nav_link_active'] = true;
                         break;
                         case 'close_saving':
+                            $section_nav['Close Saving']['nav_link_active'] = true;
                         break;
                         case 'disburse':
+                            $section_nav['Withdraw From Saving']['nav_link_active'] = true;
                         break;
                         default:
                         return redirect('/savings/collection');
@@ -142,20 +164,22 @@ class MainController extends Controller
                     }
                     $action = $action? $action : 'repayment';
                     $section_nav = [
-                        'New Loan Application'  =>  '/loans/create',
-                        'Pending Loans'         =>  '/loans/pending',
-                        'Approved Loans'        =>  '/loans/approved',
-                        'Loan Repayment'        =>  '/loans/repayment'
+                        'New Loan Application'  =>  ['link' => '/loans/create','icon' => 'plus'],
+                        'Pending Loans'         =>  ['link' => '/loans/pending','icon' => 'circle'],
+                        'Approved Loans'        =>  ['link' => '/loans/approved','icon' => 'check'],
+                        'Loan Repayment'        =>  ['link' => '/loans/repayment','icon' => 'pen']
                     ];
                     switch($action){
                         case 'create':
+                            $section_nav['New Loan Application']['nav_link_active'] = true;
                             $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
                         break;
                         case 'pending':
+                            $section_nav['Pending Loans']['nav_link_active'] = true;
                             $variable_arr['pending_loans'] = Loan::where('approval_date',null)->paginate(7);
                             $variable_arr['heading'] = "List of Loans Awaiting Approval $ Disbursement";
                             if(isset($_GET['approve_loan']) && is_numeric($_GET['approve_loan'])){
-                                $customer_class = new CustomerClass('loans','approve',0,$_GET['approve_loan'],Auth::id());
+                                $customer_class = new CustomerClass('loans','approve',0,$_GET['approve_loan'],Auth::id(),false);
                                 if($customer_class->approve_loan()){
                                     $customer_class->save_transaction();
                                     session()->flash('info', 'Task was successful!');
@@ -167,42 +191,48 @@ class MainController extends Controller
                             }
                         break;
                         case 'approved':
-                           $variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
-                           $variable_arr['heading'] = "List of Approved Loans";
+                            $section_nav['Approved Loans']['nav_link_active'] = true;
+                            $variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
+                            $variable_arr['heading'] = "List of Approved Loans";
                         break;
                         case 'repayment':
-                           $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
-                           if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
+                            $section_nav['Loan Repayment']['nav_link_active'] = true;
+                            $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                            if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
                             $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->get();
                            }
                         break;
                     }
+                    //return $section_nav;
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
                     $transaction_class = new TransactionClass(10);
                     $section_nav = [
-                        'Today\'s Transactions'          =>  '/transactions/today',
-                        'This Week\'s Transactions'     =>  '/transactions/week',
-                        'This Month\'s Transactions'    =>  '/transactions/month',
+                        'Today\'s Transactions'          =>  ['link' => '/transactions/today','icon' => 'file'],
+                        'This Week\'s Transactions'     =>  ['link' => '/transactions/week','icon' => 'file-alt'],
+                        'This Month\'s Transactions'    =>  ['link' => '/transactions/month','icon' => 'file-archive'],
                     ];
                     switch ($action) {
                         case 'today':
+                            $section_nav['Today\'s Transactions']['nav_link_active'] = true;
                             //return 1;
                             $variable_arr['transactions'] = $transaction_class->get_today();
                             $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "List of Transactions for Today";
+                            $variable_arr['heading'] = "Today's Transactions";
                             break;
 
                         case 'week':
+                            $section_nav['This Week\'s Transactions']['nav_link_active'] = true;
                             $variable_arr['transactions'] = $transaction_class->get_week();
                             $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "List of Transactions for This Week";
+                            $variable_arr['heading'] = "This Week's Transactions";
                             break;
 
                         case 'month':
+                            $section_nav['This Month\'s Transactions']['nav_link_active'] = true;
                             $variable_arr['transactions'] = $transaction_class->get_month();
                             $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "List of Transactions for This Month";
+                            $variable_arr['heading'] = "This Month's Transactions";
                             break;
 
                         default:

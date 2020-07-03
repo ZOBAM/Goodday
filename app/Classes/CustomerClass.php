@@ -106,6 +106,7 @@ class CustomerClass {
         $this->transaction->type = $this->type;
         $this->transaction->amount = $this->amount;
         $this->transaction->comment = $this->comment;
+        $this->transaction->staff_id = $this->staff->id;
         if($this->transaction->save()){
             return true;
         }

@@ -5,7 +5,9 @@
             {{Session()->get('current_customer')->full_name}}
         </div>
     </div>
-    @if(!$variable_arr['saving'])
+    @if(session()->has('info'))
+        @include('layouts.notification')
+    @elseif(!$variable_arr['saving'])
     <div class="col-sm-12 alert alert-primary" role="alert">
         <p><strong>No Active Saving:</strong> There is no  current Saving for this customer. Create a new saving before you can make close it.</p>
     </div>
