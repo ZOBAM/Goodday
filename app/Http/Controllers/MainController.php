@@ -47,7 +47,7 @@ class MainController extends Controller
         $variable_arr['staffs'] = User::get();
         //check if the current customer already has a loan that is still running
         if (session()->has('current_customer')) {
-            $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->first();
+            $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
             $variable_arr['current_customer_loan']? $variable_arr['has_loan'] = true : $variable_arr['has_loan'] = false;
         }
         //end session
@@ -59,7 +59,7 @@ class MainController extends Controller
         $variable_arr['card_header'] = 'Customer\'s Area';
         $variable_arr['require_session'] = false;
         $variable_arr['session_isset'] = session()->has('current_customer')? true : false;
-        $sections = ['customers','savings','loans','staffs','transactions'];
+        $sections = ['customers','savings','loans','admin','transactions'];
         if(in_array($section,$sections)){
             $variable_arr['nav_link_active'] = false;
             switch($section){
@@ -244,11 +244,12 @@ class MainController extends Controller
                             break;
                     }
                 break;
-                case 'staffs'://HANDLE STAFF SECTION
-                    $action = $action? $action : 'create';
+                case 'admin'://HANDLE STAFF SECTION
+                    $action = $action? $action : 'add_staff';
+                    //return "Admin reached!";
                     $section_nav = [
-                        'Add Staff'          =>  'staffs/create',
-                        'Remove Staff'     =>  'staffs/deactivate',
+                        'Add Staff'          =>  ['link' => '/staffs/add_staff','icon' => 'file'],
+                        'Manage Staff'     =>  ['link' => '/staffs/manage_staffs','icon' => 'file'],
                     ];
             }//end switch section
         }//end if section in array of sections

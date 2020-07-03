@@ -92,7 +92,7 @@ class CustomerClass {
         return $this->transaction_ref;
     }//end get_transaction ref.
     public function approve_loan(){
-        $this->customer->loan = Loan::where('customer_id',$this->customer->id)->first();
+        $this->customer->loan = Loan::where('customer_id',$this->customer->id)->where('loan_cleared',false)->first();
         if($this->customer->loan){
             $this->customer->loan->approval_date = Carbon::now();
             $this->customer->loan->approved_by = $this->staff->id;

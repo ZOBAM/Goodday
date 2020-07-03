@@ -20,6 +20,7 @@ Route::post('/savings/{customer_Id?}/{action?}', 'SavingsController@StoreSavings
 Route::post('/customers/{customer_id?}/{action?}', 'CustomersController@StoreCustomer')->middleware('auth');
 //Route::get('/loans/{action?}', 'MainController@loans');
 Route::post('/loans/{customer_id?}/{action?}', 'LoansController@StoreLoans')->middleware('auth');
+Route::post('/admin/{staff_id?}/{action?}', 'AdminController@index')->middleware('auth');
 Route::get('/{section?}/{action?}/{customer_id?}', 'MainController@index')->middleware('auth');
 //Route::get('/staffs/{action?}', 'MainController@staffs');
 //Route::get('/home', 'MainController@index');
