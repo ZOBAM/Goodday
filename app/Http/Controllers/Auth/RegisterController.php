@@ -76,7 +76,6 @@ class RegisterController extends Controller
             'phone_number' => $data['phone_number'],
             'bvn' => $data['bvn'],
             'email' => $data['email'],
-            'designation' => 'staff',
             'password' => Hash::make($data['password']),
         ]);
         //check if image was uploaded and process it.

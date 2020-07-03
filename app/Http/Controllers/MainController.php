@@ -206,7 +206,11 @@ class MainController extends Controller
                     //return $section_nav;
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
-                    $transaction_class = new TransactionClass(10);
+                    $staff_set = false;
+                    if($id){
+                        $staff_set = $id;
+                    }
+                    $transaction_class = $staff_set? new TransactionClass(10,$staff_set) : new TransactionClass(10,Auth::id());
                     $section_nav = [
                         'Today\'s Transactions'          =>  ['link' => '/transactions/today','icon' => 'file'],
                         'This Week\'s Transactions'     =>  ['link' => '/transactions/week','icon' => 'file-alt'],

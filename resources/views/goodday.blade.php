@@ -5,8 +5,8 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header" style="background-color: rgb(231, 220, 220); color: rgb(48, 46, 44);">
-                    Welcome To Good Day Website, this site is currently under development.
+                <div class="card-header" style="background-color: rgb(248, 240, 240); color: rgb(48, 46, 44);">
+                    Welcome To Good Day Website.
                 </div>
 
                 <div class="card-body">

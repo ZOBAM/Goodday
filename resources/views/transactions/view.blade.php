@@ -5,14 +5,16 @@
     </div>
     <div class="col-sm-12">
         <form id="account_id">
-                    <div class="row">
-                        <div class="col-sm-6 offset-sm-3">
-                            <select class="custom-select" name="staff_id" id="staff_id" autofocus>
-                                <option value="">Select Staff</option>
-                                <option value="1">Mathew Hamsa</option>
-                            </select>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-sm-6 offset-sm-3">
+                    <select class="custom-select" name="staff_id" id="staff_id" autofocus>
+                        <option value="">Select Staff</option>
+                        @foreach($variable_arr['staffs'] as $staff)
+                        <option value="{{$staff->id}}">{{$staff->full_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </form>
     </div>
 </div>
@@ -52,9 +54,15 @@ There is currently no Transactions for today to display.
 @section('footerLinks')
 <script>
     $('#staff_id').change(function(){
-        location = location.href+'?staff_id='+$(this).val();
         //alert($(this).val());
-        //alert(location.href);
+        let goURL = location.pathname;
+        let goURLArr = goURL.split('/');
+        if(goURLArr[3] === undefined){
+            location = location.pathname+'/'+$(this).val();
+        }
+        else{
+            location = goURLArr[0]+'/'+goURLArr[1]+'/'+goURLArr[2]+'/'+$(this).val();
+        }
     })
 var th = ['','thousand','million', 'billion','trillion'];
 var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine'];
