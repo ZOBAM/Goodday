@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Customer, Saving, Savings_collection,Withdrawal,Balance};
+use App\{Customer, Saving, Savings_collection,Withdrawal,Balance,Guarantor};
 use App\Classes\{CustomerClass};
 use Auth;
 
@@ -28,10 +28,12 @@ class CustomersController extends Controller
         ]);
         if($customer_id){//Means account is being updated
             $customer = Customer::findOrFail($customer_id);
+            $guarantor = Guarantor::where('customer_id',$customer_id);
             $redirect_ur = "/customers/view/$customer->id?new=updated";
         }
         else{//It's a new customer
-            $customer =new Customer;
+            $customer   = new Customer;
+            $guarantor  = new Guarantor;
             $redirect_ur = "/customers/view/$customer->id?new=1";
             //create customer account no. for new account
             $customer_class = new CustomerClass('customers','create',0,0,Auth::id(),false);
@@ -52,10 +54,26 @@ class CustomersController extends Controller
         $customer->poverty_index    = $request->poverty_index;
         $customer->gender           = $request->gender;
         if($request->has('gresident_address')){
-            return "Processing residential address";
+            $this->validate($request, [
+                'gfull_name'        => 'required|string|min:6|max:55',
+                'gphone_number'     => 'required|string|max:14|min:11|unique:App\Guarantor,gphone_number',
+                'grelationship'     => 'required|string|max:8|min:5',
+                'gresident_address' => 'required|string|max:200|min:6',
+                'gwork_address'     => 'required|string|max:200|min:6',
+                'goccupation'       => 'required|string|max:200|min:6',
+            ]);
         }
-        return "No Guarantor found";
         if($customer->save()){
+            if($request->has('gresident_address')){
+                $guarantor->gfull_name          = $request->gfull_name;
+                $guarantor->gphone_number       = $request->gphone_number;
+                $guarantor->grelationship       = $request->grelationship;
+                $guarantor->gresident_address   = $request->gresident_address;
+                $guarantor->gwork_address       = $request->gwork_address;
+                $guarantor->goccupation         = $request->goccupation;
+                $guarantor->customer_id         = $customer->id;
+                $guarantor->save();
+            }
             if(!$customer_id){
                 $customer_class->set_customer($customer->id);
                 $customer_class->save_transaction();

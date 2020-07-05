@@ -140,7 +140,6 @@
     @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
-<script src="{{asset('/js/customer.js')}}" ></script>
 <script>
 var app = new Vue({
   el: '#app',

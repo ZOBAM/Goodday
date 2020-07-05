@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBalancesTable extends Migration
+class CreateGuarantorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,16 @@ class CreateBalancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('balances', function (Blueprint $table) {
+        Schema::create('guarantors', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
-            $table->float('amount')->default(0);
+            $table->string('gfull_name');
+            $table->string('gphone_number')->unique();
+            $table->string('gresident_address');
+            $table->string('gwork_address');
+            $table->string('grelationship');
+            $table->string('goccupation');
             $table->timestamps();
         });
     }
@@ -29,6 +34,6 @@ class CreateBalancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('balances');
+        Schema::dropIfExists('guarantors');
     }
 }

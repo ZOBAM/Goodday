@@ -177,85 +177,88 @@
                 </div>
             </div>
         </div>
-        <hr style="border: .5em solid #3490DC;width: 100%;margin:0em auto 0em -0.6em;color: #3490DC;">
-        <h3>Guarantors' Details</h3>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="gfull_name">Full Name:</label>
-                    <input type="gfull_name" class="form-control @error('gfull_name') is-invalid @enderror" placeholder="Full Name" id="gfull_name" name="gfull_name" value="{{ old('gfull_name') }}">
-                    @error('gfull_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+        <input type="button" value="Add Guarantor's Detail" v-on:click = "addGuarantor = !addGuarantor">
+        <div v-if ="addGuarantor === true">
+            <hr style="border: .5em solid #3490DC;width: 100%;margin:0em auto 0em -0.6em;color: #3490DC;">
+            <h3>Guarantors' Details</h3>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="gfull_name">Full Name:</label>
+                        <input type="gfull_name" class="form-control @error('gfull_name') is-invalid @enderror" placeholder="Full Name" id="gfull_name" name="gfull_name" value="{{ old('gfull_name') }}" required>
+                        @error('gfull_name')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="gphone_number">Phone Number:</label>
+                        <input type="text" class="form-control @error('gphone_number') is-invalid @enderror" placeholder="Phone No." id="gphone_number" name="gphone_number" value="{{ old('gphone_number') }}" required>
+                        @error('gphone_number')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="gphone_number">Phone Number:</label>
-                    <input type="text" class="form-control @error('gphone_number') is-invalid @enderror" placeholder="Phone No." id="gphone_number" name="gphone_number" value="{{ old('gphone_number') }}">
-                    @error('gphone_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="grelationship">Relationship:</label>
+                        <select class="form-control @error('grelationship') is-invalid @enderror" id="grelationship" name="grelationship" required>
+                            <option value="father">Father</option>
+                            <option value="mother">Mother</option>
+                            <option value="wife">Wife</option>
+                            <option value="husband">Husband</option>
+                            <option value="brother">Brother</option>
+                            <option value="sister">Sister</option>
+                            <option value="friend">Friend</option>
+                        </select>
+                        @error('grelationship')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="goccupation">Occupation:</label>
+                        <input type="text" class="form-control @error('goccupation') is-invalid @enderror" placeholder="Occupation" id="goccupation" name="goccupation" value="{{ old('goccupation') }}" required>
+                        @error('goccupation')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="grelationship">Relationship:</label>
-                    <select class="form-control @error('grelationship') is-invalid @enderror" id="grelationship" name="grelationship" required>
-                        <option value="father">Father</option>
-                        <option value="mother">Mother</option>
-                        <option value="wife">Wife</option>
-                        <option value="husband">Husband</option>
-                        <option value="brother">Brother</option>
-                        <option value="sister">Sister</option>
-                        <option value="friend">Friend</option>
-                    </select>
-                    @error('grelationship')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="gresident_address">Residential Address:</label>
+                        <input type="text" class="form-control @error('gresident_address') is-invalid @enderror" placeholder="Residential Address" id="gresident_address" name="gresident_address" value="{{ old('gresident_address') }}" required>
+                        @error('gresident_address')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="goccupation">Occupation:</label>
-                    <input type="text" class="form-control @error('goccupation') is-invalid @enderror" placeholder="Occupation" id="goccupation" name="goccupation" value="{{ old('goccupation') }}">
-                    @error('goccupation')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="gresident_address">Residential Address:</label>
-                    <input type="text" class="form-control @error('gresident_address') is-invalid @enderror" placeholder="Residential Address" id="gresident_address" name="gresident_address" value="{{ old('gresident_address') }}">
-                    @error('gresident_address')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="gwork_address">Work/Business Address:</label>
-                    <input type="text" class="form-control @error('gwork_address') is-invalid @enderror" placeholder="Work/Business Address" id="gwork_address" name="gwork_address" value="{{ old('gwork_address') }}">
-                    @error('gwork_address')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                <div class="col">
+                    <div class="form-group">
+                        <label for="gwork_address">Work/Business Address:</label>
+                        <input type="text" class="form-control @error('gwork_address') is-invalid @enderror" placeholder="Work/Business Address" id="gwork_address" name="gwork_address" value="{{ old('gwork_address') }}" required>
+                        @error('gwork_address')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
         </div>
@@ -267,5 +270,15 @@
     </form>
     @section('footerLinks')
     <script src="{{asset('/js/customer.js')}}" defer></script>
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+            addGuarantor: false,
+        },
+        methods:{
+        }
+        })
+    </script>
     @endsection
 @endif
