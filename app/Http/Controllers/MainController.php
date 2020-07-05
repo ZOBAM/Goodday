@@ -21,8 +21,11 @@ class MainController extends Controller
             }
             else{//set current customer session
                 $savings = Saving::where('customer_id',$customer->id)->get();
+                $balance = Balance::where('customer_id',$customer->id)->first();
                 //return $savings;
                 $customer->savings = $savings;
+                $customer->balance_amount = $balance->amount;
+                $customer->max_loan_amount = $balance->amount * 10;
                 session(['current_customer' => $customer]);
                 return true;
                 //return url()->current();
@@ -41,6 +44,12 @@ class MainController extends Controller
 
     //the below function will handle the various links based on provided section
     public function index($section = false, $action = false, $id = false){
+        //keep deactivated staffs away
+        if(!(Auth::user()->rank > 0)){
+            return redirect('/');
+        }
+        //set if staff is admin
+        $variable_arr['is_admin'] = (Auth::user()->rank >= 2)? True : false;
         //set active (for css link class) to false for all
         $variable_arr['navbar_link_active'] = false;
         //get staffs from db
@@ -199,7 +208,7 @@ class MainController extends Controller
                             $section_nav['Loan Repayment']['nav_link_active'] = true;
                             $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
                             if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
-                            $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->get();
+                            $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
                            }
                         break;
                     }
@@ -210,7 +219,12 @@ class MainController extends Controller
                     if($id){
                         $staff_set = $id;
                     }
-                    $transaction_class = $staff_set? new TransactionClass(10,$staff_set) : new TransactionClass(10,Auth::id());
+                    if($variable_arr['is_admin']){
+                        $transaction_class = $staff_set? new TransactionClass(10,$staff_set) : new TransactionClass(10);
+                    }
+                    else{
+                        $transaction_class = $staff_set? new TransactionClass(10,$staff_set) : new TransactionClass(10,Auth::id());
+                    }
                     $section_nav = [
                         'Today\'s Transactions'          =>  ['link' => '/transactions/today','icon' => 'file'],
                         'This Week\'s Transactions'     =>  ['link' => '/transactions/week','icon' => 'file-alt'],
@@ -245,12 +259,25 @@ class MainController extends Controller
                     }
                 break;
                 case 'admin'://HANDLE STAFF SECTION
+                    //keep unauthorized staffs away
+                    if(!$variable_arr['is_admin']){
+                        return redirect('/customers');
+                    }
                     $action = $action? $action : 'add_staff';
                     //return "Admin reached!";
                     $section_nav = [
-                        'Add Staff'          =>  ['link' => '/staffs/add_staff','icon' => 'file'],
-                        'Manage Staff'     =>  ['link' => '/staffs/manage_staffs','icon' => 'file'],
+                        'Add Staff'          =>  ['link' => '/admin/add_staff','icon' => 'file'],
+                        'Manage Staff'     =>  ['link' => '/admin/manage_staffs','icon' => 'file'],
                     ];
+                    switch($action){
+                        case 'add_staff':
+                            $section_nav['Add Staff']['nav_link_active'] = true;
+                        break;
+                        case 'manage_staffs':
+                            $section_nav['Manage Staff']['nav_link_active'] = true;
+                            $variable_arr['staffs'] = User::where('rank','!=',0)->where('id','!=',Auth::id())->get();
+                        break;
+                    }
             }//end switch section
         }//end if section in array of sections
         else{//this sectional nav will be displayed when no section is specified

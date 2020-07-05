@@ -8,10 +8,14 @@
     @if(session()->has('info'))
         @include('layouts.notification')
     @elseif($variable_arr['has_loan'])
-    <div class="alert alert-primary" role="alert">
-        <p>One customer cannot have two running loans at the same time.</p>
-        <p>Clear outstanding repayment of current loan before  applying for another one</p>
-    </div>
+        <div class="alert alert-primary" role="alert">
+            <p>One customer cannot have two running loans at the same time.</p>
+            <p>Clear outstanding repayment of current loan before  applying for another one</p>
+        </div>
+    @elseif(Session()->get('current_customer')->balance_amount < 3000)
+        <div class="alert alert-primary" role="alert">
+            <p><strong>Insufficient Balance: </strong>{{Session()->get('current_customer')->balance_amount}}This customer does not have the minimum saving of N3,000 required for loan application.</p>
+        </div>
     @else
     <div class="row">
         <div class="col-sm-4 offset-sm-4 text-center">
@@ -27,7 +31,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="amount">Loan Amount(N)*:</label>
-                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(N)" name="amount" value="{{ old('amount') }}" min="1000" max="200000" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
+                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(N)" name="amount" value="{{ old('amount') }}" min="1000" max="{{Session()->get('current_customer')->max_loan_amount}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
                     @error('amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -55,12 +59,10 @@
                 <div class="form-group">
                     <label for="duration">Duration of Loan:</label>
                     <select class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration') }}" required v-model = "duration">
-                        <option value="7">One Week</option>
-                        <option value="14">Two Weeks</option>
-                        <option value="21">Three Weeks</option>
                         <option value="30">One Month</option>
-                        <option value="60">Two Months</option>
                         <option value="90">Three Months</option>
+                        <option value="120">Four Months</option>
+                        <option value="180">Six Months</option>
                     </select>
                     @error('duration')
                         <span class="invalid-feedback" role="alert">
@@ -89,6 +91,7 @@
                 <div class="form-group">
                     <label for="repay_interval">Repay Interval:</label>
                     <select class="form-control @error('repay_interval') is-invalid @enderror" id="repay_interval" name="repay_interval" value="{{ old('repay_interval') }}" required>
+                        <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly" v-if = "duration>21">Monthly</option>
                     </select>

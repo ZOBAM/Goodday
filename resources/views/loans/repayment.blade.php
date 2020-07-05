@@ -115,6 +115,7 @@
                 </tr>
             @endforeach
         </table>
+        {{$variable_arr['current_due_dates']->links()}}
     @else
         <div class="alert alert-primary" role = "alert">Current Customer does not have an active loan to repay.</div>
     @endif

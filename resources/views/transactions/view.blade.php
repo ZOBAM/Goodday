@@ -3,6 +3,7 @@
     <div class="col-sm-12 text-center">
         <h2>{{$variable_arr['heading']}}<sup>({{$variable_arr['transactions']->total()}})</sup></h2>
     </div>
+    @if($variable_arr['is_admin'])
     <div class="col-sm-12">
         <form id="account_id">
             <div class="row">
@@ -17,6 +18,7 @@
             </div>
         </form>
     </div>
+    @endif
 </div>
 <table class="table table-responsive table-striped table-hover">
     <thead style="background-color: rgb(73, 67, 165);color: cornsilk;">

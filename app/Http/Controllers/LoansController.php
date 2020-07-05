@@ -66,6 +66,18 @@ class LoansController extends Controller
                 $customer_class->update_account();
                 //calculate the due date for repayment(s) and the unit repay amount
                 switch ($loan->repay_interval) {
+                    case 'daily':
+                        $num_of_payments = $loan->duration;
+                        $loan->repay_unit = $loan->repay_amount/$num_of_payments;
+                        //$loan->last_repay_date = $request->first_repay_date;
+                        $loan->save();
+                        $first_repay_date = Carbon::createFromDate($request->first_repay_date);
+                        //return $request->first_repay_date->toFormattedDateString();
+                        $due_dates[] = $first_repay_date;
+                        for ($i=1; $i < $num_of_payments; $i++) {
+                            $due_dates[] = Carbon::createFromDate($request->first_repay_date)->addDays($i);
+                        }
+                        break;
                     case 'weekly':
                         $num_of_payments = $loan->duration/7;
                         $loan->repay_unit = $loan->repay_amount/$num_of_payments;

@@ -51,6 +51,10 @@ class CustomersController extends Controller
         $customer->email            = $request->email;
         $customer->poverty_index    = $request->poverty_index;
         $customer->gender           = $request->gender;
+        if($request->has('gresident_address')){
+            return "Processing residential address";
+        }
+        return "No Guarantor found";
         if($customer->save()){
             if(!$customer_id){
                 $customer_class->set_customer($customer->id);

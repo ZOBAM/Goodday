@@ -45,14 +45,14 @@
                         <ul class="navbar-nav ml-auto" style="text-align:center">
                             <!-- Authentication Links -->
                             @guest
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" href="{{ route('login') }}"><i class = "fas fa-lock"></i> {{ __('Staff Login') }}</a>
                                 </li>
                                 @if (Route::has('register'))
                                     <li class="nav-item ">
                                         <a class="nav-link" href="{{ route('register') }}"><i class = "fas fa-user-plus"></i> {{ __('Register') }}</a>
                                     </li>
-                                @endif
+                                @endif -->
                             @else
                                 <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
                                     <a href="/customers" class="nav-link"><i class="fas fa-address-book"></i> Customers</a>
@@ -72,9 +72,11 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        @if(Auth::user()->rank>1)
                                         <a class="dropdown-item" href="/admin">
                                             {{ __('Manage Staffs') }}
                                         </a>
+                                        @endif
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                                         document.getElementById('logout-form').submit();">

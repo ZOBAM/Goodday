@@ -49,7 +49,8 @@ class SavingsController extends Controller
             ]);
             //get customer balance
             $balance = Balance::where('customer_id',$customer_id)->first();
-            if($balance->amount>=$request->amount_withdrawn){
+            $saving = Saving::where('customer_id',$customer_id)->where('cycle_complete',false)->first();
+            if($saving->withdrawable_amount>=$request->amount_withdrawn){
                 $withdrawal = new Withdrawal;
                 $withdrawal->amount_withdrawn = empty($request->input('amount_withdrawn'))? $request->withdrawable_amount : $request->amount_withdrawn;
                 //$withdrawal->amount_withdrawn = $request->amount_withdrawn;
@@ -57,7 +58,6 @@ class SavingsController extends Controller
                 $withdrawal->customer_id = $customer_id;
                 if ($withdrawal->save()) {
                     //update customer current savings
-                    $saving = Saving::where('customer_id',$customer_id)->where('cycle_complete',false)->first();
                     $saving->withdrawable_amount -= $withdrawal->amount_withdrawn;
                     $saving->saving_cycle_total -= $withdrawal->amount_withdrawn;
                     $saving->save();
@@ -72,7 +72,9 @@ class SavingsController extends Controller
                 }
             }
             else{
-                return "Insufficient balance.";
+                //return "Insufficient balance.";
+                session()->flash('info','Insufficient balance.');
+                return back();
             }
         }
         //HANDLE CLOSING SAVING
