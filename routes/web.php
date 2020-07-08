@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', 'HomePageController@index')->name('homepage');
 Auth::routes();
+//clear cache
+Route::get('/clear', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    return "Cleared!";
+ });
 //Route::get('/savings/{action?}', 'MainController@savings');
 Route::post('/savings/{customer_Id?}/{action?}', 'SavingsController@StoreSavings')->middleware('auth');
 //Route::get('/customers/{action?}', 'MainController@customers');

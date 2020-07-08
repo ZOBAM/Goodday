@@ -20,7 +20,7 @@
                                 <label for="first_name" class="col-md-4 col-form-label text-md-right">{{ __('Staff Passport') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="passport" type="file" class="form-control @error('passport') is-invalid @enderror" name="passport" value="{{ old('passport') }}" required >
+                                    <input id="passport" type="file" class="form-control @error('passport') is-invalid @enderror" name="passport" value="{{ old('passport') }}" >
                                     @error('passport')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

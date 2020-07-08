@@ -19,13 +19,15 @@
             <div class="card">
                 <div class="card-header">
                     <!-- {{$variable_arr['card_header']}} -->
-                    {{Session()->get('current_customer')->full_name?? 'Customer Area'}}
                     @if($variable_arr['session_isset'])
+                    <a href="/customers/view/{{Session()->get('current_customer')->id}}">{{Session()->get('current_customer')->full_name}}</a>
                     <span class="float-right">
                         <a href="{{url()->current().'?end_session=1'}}">
                             Switch Customer
                         </a>
                     </span>
+                    @else
+                        Customer Area
                     @endif
                 </div>
                 <div class="card-body">

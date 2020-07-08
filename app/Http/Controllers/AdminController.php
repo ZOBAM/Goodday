@@ -62,7 +62,7 @@ class AdminController extends Controller
                 'bvn'        => 'required|numeric|min:10000000000',
                 'email'        => 'required|string|email|max:55|unique:users',
                 'passport'        => 'image|mimes:jpeg,png,jpg|max:2024',
-                'password'        => 'required|string|min:8|confirmed',
+                'password'        => 'nullable|required|string|min:8|confirmed',
             ]);
             $user = new User;
                 $user->first_name   = $request->first_name;

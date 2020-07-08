@@ -64,23 +64,32 @@ class CustomerClass {
                     $this->comment = $this->customer->full_name. " saved $this->amount via ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'disburse'){
-                    $this->comment = $this->customer->full_name. " withdrew the sum of N".abs($this->amount)." via ".$this->staff->full_name;
+                    $this->comment = $this->customer->full_name. " withdrew the sum of ₦".abs($this->amount)." via ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'close'){
-                    $this->comment = $this->customer->full_name. " closed saving of N".abs($this->amount)." via ".$this->staff->full_name;
+                    $this->comment = $this->customer->full_name. " closed saving of ₦".abs($this->amount)." via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'just_save'){
+                    $this->comment = $this->customer->full_name. " saved the sum of ₦".abs($this->amount)." via ".$this->staff->full_name;
                 }
                 break;
 
             case 'loans':
                 $this->transaction_ref = 'LNS';
                 if($this->subtype == 'create'){
-                    $this->comment = $this->customer->full_name. " Loan Application Fees of N$this->amount was received via ".$this->staff->full_name;
+                    $this->comment = $this->customer->full_name. " Loan Application Fees of ₦$this->amount was received via ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'approve'){
                     $this->comment = $this->customer->full_name. " Loan Application was approved by ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'repay'){
-                    $this->comment = $this->customer->full_name. " paid N$this->amount Loan Repayment via ".$this->staff->full_name;
+                    $this->comment = $this->customer->full_name. " paid ₦$this->amount Loan Repayment via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'repay_all'){
+                    $this->comment = $this->customer->full_name. " paid ₦$this->amount Loan Clearance via ".$this->staff->full_name;
+                }
+                elseif($this->subtype == 'part_repay'){
+                    $this->comment = $this->customer->full_name. " paid ₦$this->amount Partial Loan Repayment via ".$this->staff->full_name;
                 }
                 break;
 

@@ -14,7 +14,7 @@
         </div>
     @elseif(Session()->get('current_customer')->balance_amount < 3000)
         <div class="alert alert-primary" role="alert">
-            <p><strong>Insufficient Balance: </strong>{{Session()->get('current_customer')->balance_amount}}This customer does not have the minimum saving of N3,000 required for loan application.</p>
+            <p><strong>Insufficient Balance (₦{{Session()->get('current_customer')->balance_amount}}): </strong>This customer does not have the minimum saving of ₦3,000 required for loan application.</p>
         </div>
     @else
     <div class="row">
@@ -30,8 +30,8 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="amount">Loan Amount(N)*:</label>
-                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(N)" name="amount" value="{{ old('amount') }}" min="1000" max="{{Session()->get('current_customer')->max_loan_amount}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
+                    <label for="amount">Loan Amount(₦)*:</label>
+                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(₦)" name="amount" value="{{ old('amount') }}" min="1000" max="{{Session()->get('current_customer')->balance_amount * 10}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
                     @error('amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -118,12 +118,12 @@
             <div class="col">
                 <div class="form-check">
                     <label class="form-check-label">
-                    <input type="checkbox" name="paid_insurance" class="form-check-input" v-model="paidFee"  value=1>Has paid 2% (N@{{loanFee}}) for Insurance.
+                    <input type="checkbox" name="paid_insurance" class="form-check-input" v-model="paidFee"  value=1>Has paid 2% (₦@{{loanFee}}) for Insurance.
                     </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label">
-                    <input type="checkbox" name="paid_admin" class="form-check-input" v-model="paidFee"  :value="loanFee">Has paid 2% (N@{{loanFee}}) for Admin.
+                    <input type="checkbox" name="paid_admin" class="form-check-input" v-model="paidFee"  :value="loanFee">Has paid 2% (₦@{{loanFee}}) for Admin.
                     </label>
                 </div>
             </div>

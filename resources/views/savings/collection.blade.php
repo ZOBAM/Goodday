@@ -17,8 +17,8 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="amount_saved">Amount Saved (N)*:</label>
-                    <input type="number" class="form-control @error('amount_saved') is-invalid @enderror" placeholder="Amount Saved (N)" name="amount_saved" value="{{ old('amount_saved') }}" min=50 step="50" autofocus>
+                    <label for="amount_saved">Amount Saved (₦)*:</label>
+                    <input type="number" class="form-control @error('amount_saved') is-invalid @enderror" placeholder="Amount Saved (₦)" name="amount_saved" value="{{ old('amount_saved') }}" min=50 step="50" autofocus>
                     @error('amount_saved')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -28,9 +28,9 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="unit_amount">Unit Amount(N)*:</label>
+                    <label for="unit_amount">Unit Amount(₦)*:</label>
                     <input type="hidden"  name="unit_amount" value="{{ $variable_arr['saving']->unit_amount }}" >
-                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(N)" name="unit_amount" value="N{{ $variable_arr['saving']->unit_amount }}" disabled>
+                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(₦)" name="unit_amount" value="₦{{ $variable_arr['saving']->unit_amount }}" disabled>
                     @error('unit_amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -41,7 +41,7 @@
         </div>
         <div class="row">
             <div class="col-sm-12 alert alert-primary" role="alert">
-                <p><strong>Amount Save</strong>  is for recording a saving that is different from the Unit Amount. Ignore it for the system to use Unit Amount of N{{ $variable_arr['saving']->unit_amount }} as saved amount.</p>
+                <p><strong>Amount Save</strong>  is for recording a saving that is different from the Unit Amount. Ignore it for the system to use Unit Amount of ₦{{ $variable_arr['saving']->unit_amount }} as saved amount.</p>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -57,12 +57,26 @@
             <table class="table-sm table-striped">
                 <thead>
                     <tr>
-                        <th colspan="2">Customer's Details</th>
+                        <th>S/N</th>
+                        <th>Customer Name</th>
+                        <th>Unit Amount</th>
+                        <th>No. of Collections</th>
+                        <th>Saving Total</th>
+                        <th>Date Started</th>
+                        <!-- <th>Date Closed</th> -->
                     </tr>
                 </thead>
+                @foreach(Session()->get('current_customer')->savings as $saving)
                 <tr>
-                    <td>Name:</td><td></td>
+                    <td>{{$loop->iteration}}</td>
+                    <td>{{Session()->get('current_customer')->full_name}}</td>
+                    <td>{{$saving->unit_amount}}</td>
+                    <td>{{$saving->collection_count}}</td>
+                    <td>₦{{$saving->saving_cycle_peak}}</td>
+                    <td>{{date('d M, Y',strtotime($saving->created_at))}}</td>
+                    <!-- <td>{{date('d M, Y',strtotime($saving->updated_at))}}</td> -->
                 </tr>
+                @endforeach
             </table>
         </div>
         @endif

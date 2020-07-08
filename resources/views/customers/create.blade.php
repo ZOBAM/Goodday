@@ -41,7 +41,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="other_name">Other Name:</label>
-                    <input type="text" class="form-control @error('other_name') is-invalid @enderror" placeholder="Other Name" id="other_name" name="other_name" value="{{ old('other_name') }}" required>
+                    <input type="text" class="form-control @error('other_name') is-invalid @enderror" placeholder="Other Name" id="other_name" name="other_name" value="{{ old('other_name') }}" >
                     @error('other_name')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -51,8 +51,8 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="phone_number">Phone No.*:</label>
-                    <input type="text" class="form-control @error('phone_number') is-invalid @enderror" placeholder="Phone number" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" required>
+                    <label for="phone_number">Phone No.:</label>
+                    <input type="text" class="form-control @error('phone_number') is-invalid @enderror" placeholder="Phone number" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" >
                     @error('phone_number')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -61,119 +61,122 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="next_of_kin">Next of Kin*:</label>
-                    <input type="text" class="form-control @error('next_of_kin') is-invalid @enderror" placeholder="Next of Kin" id="next_of_kin" name="next_of_kin" value="{{ old('next_of_kin') }}" required>
-                    @error('next_of_kin')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+        <input type="button" value="Add More Details" v-on:click = "moreDetails = !moreDetails">
+        <div v-if = "moreDetails">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="next_of_kin">Next of Kin:</label>
+                        <input type="text" class="form-control @error('next_of_kin') is-invalid @enderror" placeholder="Next of Kin" id="next_of_kin" name="next_of_kin" value="{{ old('next_of_kin') }}" >
+                        @error('next_of_kin')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="nok_relationship">Relationship:</label>
+                        <select class="form-control @error('nok_relationship') is-invalid @enderror" id="nok_relationship" name="nok_relationship" >
+                            <option value="father">Father</option>
+                            <option value="husband">Husband</option>
+                        </select>
+                        @error('nok_relationship')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="nok_relationship">Relationship*:</label>
-                    <select class="form-control @error('nok_relationship') is-invalid @enderror" id="nok_relationship" name="nok_relationship" required>
-                        <option value="father">Father</option>
-                        <option value="husband">Husband</option>
-                    </select>
-                    @error('nok_relationship')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="state">State of Origin:</label>
+                        <input type="text" class="form-control @error('state') is-invalid @enderror" placeholder="State" id="state" name="state" value="{{ old('state') }}" >
+                        @error('state')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="lga">LGA of Origin:</label>
+                        <input type="text" class="form-control @error('lga') is-invalid @enderror" placeholder="LGA" id="lga" name="lga" value="{{ old('lga') }}" >
+                        @error('lga')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="state">State of Origin*:</label>
-                    <input type="text" class="form-control @error('state') is-invalid @enderror" placeholder="State" id="state" name="state" value="{{ old('state') }}" required>
-                    @error('state')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="community">Community:</label>
+                        <input type="text" class="form-control @error('community') is-invalid @enderror" placeholder="Community" id="community" name="community" value="{{ old('community') }}" >
+                        @error('community')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="full_address">Full Address:</label>
+                        <input type="text" class="form-control @error('full_address') is-invalid @enderror" placeholder="Full Address" id="full_address" name="full_address" value="{{ old('full_address') }}" >
+                        @error('full_address')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="lga">LGA of Origin*:</label>
-                    <input type="text" class="form-control @error('lga') is-invalid @enderror" placeholder="LGA" id="lga" name="lga" value="{{ old('lga') }}" required>
-                    @error('lga')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" placeholder="email" id="email" name="email" value="{{ old('email') }}">
+                        @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="poverty_index">Poverty Index:</label>
+                        <input type="text" class="form-control @error('poverty_index') is-invalid @enderror" placeholder="Poverty Index" id="poverty_index" name="poverty_index" value="{{ old('poverty_index') }}">
+                        @error('poverty_index')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="community">Community*:</label>
-                    <input type="text" class="form-control @error('community') is-invalid @enderror" placeholder="Community" id="community" name="community" value="{{ old('community') }}" required>
-                    @error('community')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="full_address">Full Address*:</label>
-                    <input type="text" class="form-control @error('full_address') is-invalid @enderror" placeholder="Full Address" id="full_address" name="full_address" value="{{ old('full_address') }}" required>
-                    @error('full_address')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="email">Email (optional):</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" placeholder="email" id="email" name="email" value="{{ old('email') }}">
-                    @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-group">
-                    <label for="poverty_index">Poverty Index:</label>
-                    <input type="text" class="form-control @error('poverty_index') is-invalid @enderror" placeholder="Poverty Index" id="poverty_index" name="poverty_index" value="{{ old('poverty_index') }}">
-                    @error('poverty_index')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="gender">Gender*:</label>
-                    <select class="form-control @error('gender') is-invalid @enderror" required id="gender" name="gender">
-                    <option value="">--Select Category--</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    </select>
-                    @error('gender')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="gender">Gender*:</label>
+                        <select class="form-control @error('gender') is-invalid @enderror"  id="gender" name="gender">
+                        <option value="">--Select Category--</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        </select>
+                        @error('gender')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
                 </div>
             </div>
         </div>
@@ -275,6 +278,7 @@
         el: '#app',
         data: {
             addGuarantor: false,
+            moreDetails : false,
         },
         methods:{
         }

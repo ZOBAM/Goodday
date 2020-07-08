@@ -159,6 +159,7 @@ class MainController extends Controller
                             $section_nav['Close Saving']['nav_link_active'] = true;
                         break;
                         case 'disburse':
+                            $variable_arr['withdrawable_amount'] = Session()->get('current_customer')->balance_amount - $variable_arr['saving']->unit_amount;
                             $section_nav['Withdraw From Saving']['nav_link_active'] = true;
                         break;
                         default:
@@ -208,8 +209,40 @@ class MainController extends Controller
                             $section_nav['Loan Repayment']['nav_link_active'] = true;
                             $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
                             if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
-                            $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
-                           }
+                                $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                $variable_arr['unpaid_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->where('repaid',false)->first();
+                                /* if($variable_arr['unpaid_due_dates']){
+                                    $first_due_date = Carbon::createFromDate($variable_arr['unpaid_due_dates']->due_date);
+                                    $today = Carbon::now();
+                                    $defaulted_days = $today->diffInDays($first_due_date);
+                                    if($defaulted_days > 0){
+                                        $variable_arr['unpaid_due_dates']->defaulted = true;
+                                        if($defaulted_days > 7){
+                                            $loan = Loan::where('id',$variable_arr['unpaid_due_dates']->loan_id)->first();
+                                            //return $loan;
+                                            if(!is_null($loan->last_default_check)){//has defaulted before
+                                                $last_check = Carbon::createFromDate($loan->last_default_check);
+                                                if($today->diffInDays($last_check) >= 1){
+                                                    $variable_arr['unpaid_due_dates']->amount_repaid += (2/100) * $loan->amount * ($today->diffInDays($last_check));
+                                                    $loan->outstanding_amount += (2/100) * $loan->amount * ($today->diffInDays($last_check));
+                                                    return "Grace period expired";
+                                                }
+                                                return "This is null ".$today->diffInDays($last_check) ;
+                                            }
+                                            else{//first time of recording default penalty
+                                                //return "Check is null";
+                                                $variable_arr['unpaid_due_dates']->amount_repaid += ((2/100) * $loan->amount) * ($defaulted_days - 7);
+                                                $loan->outstanding_amount += ((2/100) * $loan->amount) * ($defaulted_days - 7);
+                                                $loan->last_default_check = Carbon::now();
+                                                $loan->save();
+                                                $variable_arr['unpaid_due_dates']->save();
+                                            }
+                                            return "Repay amount " . $loan->outstanding_amount." : Repay Unit: ".$variable_arr['unpaid_due_dates']->amount_repaid;
+                                        }
+                                        return "This payment defaulted with $defaulted_days days";
+                                    }
+                                } */
+                            }
                         break;
                     }
                     //return $section_nav;

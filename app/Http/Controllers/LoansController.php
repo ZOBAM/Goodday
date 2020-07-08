@@ -10,6 +10,9 @@ use Auth;
 
 class LoansController extends Controller
 {
+    public function getDueDates(){
+        $call;
+    }
     public function StoreLoans(Request $request, $customer_id = false,$action = false){
         //LOAN REPAYMENT
         if ($action == 'repay') {
@@ -33,17 +36,82 @@ class LoansController extends Controller
                 return back();
             }
         }
+        //REPAY ALL OUTSTANDING REPAYMENT
+        elseif($action == 'repay_all'){
+            $loan = Loan::findOrFail($customer_id);//get the customer loan using Loan ID from submitted form
+            $outstanding_amount = $loan->outstanding_amount;//copy outstanding amount into a new variable
+            $loan->loan_cleared = true;
+            $loan->outstanding_amount = 0;
+            if($loan->save()){
+                $loan_repayments = Loan_repayment::where('loan_id',$loan->id)->get();
+                foreach($loan_repayments as $loan_repayment){//loop through all the pending due payment and clear them
+                    $loan_repayment->repaid = true;
+                    $loan_repayment->defaulted = false;
+                    $loan_repayment->approved_by = Auth::id();
+                    $loan_repayment->save();
+                }
+            }
+            $customer_class = new CustomerClass('loans','repay_all',$outstanding_amount,Session()->get('current_customer')->id,Auth::id(),false);
+            $customer_class->save_transaction();
+            $customer_class->update_account();
+            session()->flash('info','All outstanding loan repayment cleared!.');
+            return back();
+            //return "All outstanding loan repayment cleared!";
+        }
+        //PART PAYMENT
+        elseif($action == 'part_repayment'){
+            $part_repaid = $request->amount_repaid;
+            $loan_repay_id = $customer_id;
+            $loan_repayment = Loan_repayment::findOrFail($loan_repay_id);
+            $loan = Loan::findOrFail($loan_repayment->loan_id);
+            $ppp = (10/100) * $loan->amount; //ppp = part payment penalty
+            if($part_repaid >= $ppp){
+                $loan_repayment->amount_repaid -= ($part_repaid - $ppp);
+                $loan->outstanding_amount -= ($part_repaid - $ppp);
+                //return "PR bigger ppp";
+            }
+            else{
+                $loan_repayment->amount_repaid += ($ppp - $part_repaid);
+                $loan->outstanding_amount += ($ppp - $part_repaid);
+            }
+            $loan_repayment->approved_by = Auth::id();
+            $loan_repayment->defaulted = false;
+            $loan_repayment->repaid = false;
+            $loan_repayment->save();
+            $loan->save();
+            //get all unpaid repayments and shift their date by repay_interval
+            $unpaid_repayments = Loan_repayment::where('loan_id',$loan_repayment->loan_id)->where('repaid',false)->get();
+            foreach($unpaid_repayments as $unpaid_repayment){
+                $due_date = Carbon::createFromDate($unpaid_repayment->due_date);
+                if($loan->repay_interval == 'daily'){
+                    $unpaid_repayment->due_date = Carbon::createFromDate($due_date->toDateTimeString())->addDay();
+                }
+                elseif($loan->repay_interval == 'weekly'){
+                    $unpaid_repayment->due_date = Carbon::createFromDate($due_date->toDateTimeString())->addWeek();
+                }
+                elseif($loan->repay_interval == 'monthly'){
+                    $unpaid_repayment->due_date = Carbon::createFromDate($due_date->toDateTimeString())->addMonth();
+                }
+                $unpaid_repayment->save();
+            }
+            $customer_class = new CustomerClass('loans','part_repay',$part_repaid,Session()->get('current_customer')->id,Auth::id(),false);
+            $customer_class->save_transaction();
+            $customer_class->update_account();
+            session()->flash('info','Partial Loan Repayment Saved');
+            return back();
+            //return "Making part payment ...$loan_repayment  ___________ $ppp";
+        }
         //NEW LOAN APPLICATION
         else{
             $this->validate($request, [
-                'amount'       => 'required|numeric|min:1000|max:200000',
-                'loan_type'   => 'required|string|min:4|max:15',
-                'duration'   => 'required|numeric|min:7|max:90',
-                'repay_interval'   => 'required|string|min:4|max:10',
-                'application_date'        => 'nullable|date',
-                'first_repay_date'        => 'required|date',
+                'amount'            => 'required|numeric|min:1000|max:200000',
+                'loan_type'         => 'required|string|min:4|max:15',
+                'duration'          => 'required|numeric|min:7|max:180',
+                'repay_interval'    => 'required|string|min:4|max:10',
+                'application_date'  => 'nullable|date',
+                'first_repay_date'  => 'required|date',
                 'paid_admin'        => 'required|string',
-                'paid_insurance'        => 'required|string',
+                'paid_insurance'    => 'required|string',
             ]);
             /* if($request->has('paid_admin')){
                 return $request->paid_admin;

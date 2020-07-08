@@ -5,12 +5,12 @@
             {{Session()->get('current_customer')->full_name}}
         </div>
     </div>
-    @if(!$variable_arr['saving'])
-    <div class="col-sm-12 alert alert-primary" role="alert">
-        <p><strong>No Active Saving:</strong> There is no  current Saving for this customer. Create a new saving before you can make withdrawals from it.</p>
-    </div>
-    @elseif(session()->has('info'))
+    @if(session()->has('info'))
         @include('layouts.notification')
+    @elseif($variable_arr['withdrawable_amount'] <= 0)
+    <div class="col-sm-12 alert alert-primary" role="alert">
+        <p><strong>Low Balance:</strong> There is no  Withdrawable Amount in this customer's account.</p>
+    </div>
     @else
     <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{Session()->get('current_customer')->id}}/disburse">
@@ -18,8 +18,8 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="amount_withdrawn">Withdraw Amount (N)*:</label>
-                    <input type="number" class="form-control @error('amount_withdrawn') is-invalid @enderror" placeholder="Withdraw Amount (N)" name="amount_withdrawn" value="{{ old('amount_withdrawn') }}" min=50 step="50" required autofocus>
+                    <label for="amount_withdrawn">Withdraw Amount (₦)*:</label>
+                    <input type="number" class="form-control @error('amount_withdrawn') is-invalid @enderror" placeholder="Withdraw Amount (₦)" name="amount_withdrawn" value="{{ old('amount_withdrawn') }}" min=50 step="50" autofocus>
                     @error('amount_withdrawn')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -29,9 +29,9 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="unit_amount">Total Withdrawable Balance(N)*:</label>
-                    <input type="hidden"name="withdrawable_amount" value="{{ $variable_arr['saving']->withdrawable_amount }}">
-                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(N)" name="unit_amount" value="N{{ $variable_arr['saving']->withdrawable_amount }}" disabled>
+                    <label for="unit_amount">Total Withdrawable Balance(₦)*:</label>
+                    <input type="hidden"name="withdrawable_amount" value="{{ $variable_arr['withdrawable_amount'] }}">
+                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(₦)" value="₦{{$variable_arr['withdrawable_amount']}}" disabled>
                     @error('unit_amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>

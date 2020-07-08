@@ -9,7 +9,7 @@
         @include('layouts.notification')
     @elseif(!$variable_arr['saving'])
     <div class="col-sm-12 alert alert-primary" role="alert">
-        <p><strong>No Active Saving:</strong> There is no  current Saving for this customer. Create a new saving before you can make close it.</p>
+        <p><strong>No Active Saving:</strong> There is no  current Saving for this customer. Create a new saving before you can close it.</p>
     </div>
     @else
     <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
@@ -18,8 +18,8 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="amount_withdrawn">Withdrawable Amount (N)*:</label>
-                    <input type="text" class="form-control @error('amount_withdrawn') is-invalid @enderror" placeholder="Withdraw Amount (N)" name="amount_withdrawn" value="N{{ $variable_arr['saving']->withdrawable_amount }}" disabled>
+                    <label for="amount_withdrawn">Withdrawable Amount (₦)*:</label>
+                    <input type="text" class="form-control @error('amount_withdrawn') is-invalid @enderror" placeholder="Withdraw Amount (₦)" name="amount_withdrawn" value="₦{{ $variable_arr['saving']->withdrawable_amount }}" disabled>
                     @error('amount_withdrawn')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -29,8 +29,8 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="unit_amount">Saving Total (N)*:</label>
-                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(N)" name="unit_amount" value="N{{ $variable_arr['saving']->saving_cycle_total }}" disabled>
+                    <label for="unit_amount">Saving Total (₦)*:</label>
+                    <input type="text" class="form-control @error('unit_amount') is-invalid @enderror" placeholder="Unit Amount(N)" name="unit_amount" value="₦{{ $variable_arr['saving']->saving_cycle_total }}" disabled>
                     @error('unit_amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
