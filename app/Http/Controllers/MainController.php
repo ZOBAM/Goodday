@@ -78,15 +78,14 @@ class MainController extends Controller
                         'Create New Account'          =>  ['link' => '/customers/create','icon' => 'user-plus'],
                         'Update Customer Account'     =>  ['link' => '/customers/edit','icon' => 'user-edit'],
                         'View Customers Accounts'    =>  ['link' => '/customers/view','icon' => 'eye'],
+                        'Customers Groups'            =>  ['link' => '/customers/groups','icon' => 'layer-group'],
                     ];
                     switch($action){
                         case 'create':
                             $section_nav['Create New Account']['nav_link_active'] = true;
-                            $variable_arr['nav_link_active'] = true;
                         break;
                         case 'edit':
                             $section_nav['Update Customer Account']['nav_link_active'] = true;
-                            $variable_arr['nav_link_active'] = true;
                             $variable_arr['require_session'] = true;
                             if(!$variable_arr['session_isset']){
                                 if($this->SetCurrentCustomer()){
@@ -96,7 +95,6 @@ class MainController extends Controller
                         break;
                         case 'view':
                             $section_nav['View Customers Accounts']['nav_link_active'] = true;
-                            $variable_arr['nav_link_active'] = false;
                             if(is_numeric($id)){
                                 //return $id;
                                 $variable_arr['new_customer'] = false;
@@ -121,6 +119,10 @@ class MainController extends Controller
                                     }
                                 }
                             }
+                        break;
+                        case 'groups':
+                            $section_nav['Customers Groups']['nav_link_active'] = true;
+                            $variable_arr['staffs'] = User::where('rank','>',0)->get();
                         break;
                         default:
                         return redirect('/customer');
@@ -159,7 +161,8 @@ class MainController extends Controller
                             $section_nav['Close Saving']['nav_link_active'] = true;
                         break;
                         case 'disburse':
-                            $variable_arr['withdrawable_amount'] = Session()->get('current_customer')->balance_amount - $variable_arr['saving']->unit_amount;
+                            $unit_amount = $variable_arr['saving']? $variable_arr['saving']->unit_amount : 0;
+                            $variable_arr['withdrawable_amount'] = Session()->get('current_customer')->balance_amount - $unit_amount;
                             $section_nav['Withdraw From Saving']['nav_link_active'] = true;
                         break;
                         default:

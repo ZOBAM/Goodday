@@ -1,9 +1,5 @@
 @if($variable_arr['session_isset'])
     <div class="row">
-        <button class = "col btn btn-outline-primary" @click = "justSaving = false"> Saving Cycle </button>
-        <button class = "col btn btn-outline-primary" @click = "justSaving = true"> Just Saving </button>
-    </div>
-    <div class="row">
         <div class="col-sm-4 offset-sm-4 text-center">
             <img src="{{asset('/images/customers/'.Session()->get('current_customer')->passport_link)}}" alt="" style="max-width: 50px;"><br>
             {{Session()->get('current_customer')->full_name}}
@@ -16,7 +12,11 @@
         <p><strong>Saving Exist:</strong>  There is an ongoing Saving for this Customer. If you want to start a new Saving then close the Current Saving Cycle.</p>
     </div>
     @else
-    <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
+    <div class="row" style="margin: 1em 0em;">
+        <div class = "col"><button v-bind:class="{ buttonClicked: !justSaving }" class = "col btn btn-outline-primary" @click = "justSaving = false"> Saving Cycle </button></div>
+        <div class = "col"><button v-bind:class="{ buttonClicked: justSaving }" class = "col btn btn-outline-primary .button-clicked" @click = "justSaving = true"> Just Saving </button></div>
+
+    </div>
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/savings/{{Session()->get('current_customer')->id}}">
         {{ csrf_field() }}
         <div class="row">

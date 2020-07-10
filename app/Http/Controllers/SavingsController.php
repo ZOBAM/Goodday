@@ -53,20 +53,25 @@ class SavingsController extends Controller
             //get customer balance
             $balance = Balance::where('customer_id',$customer_id)->first();
             $saving = Saving::where('customer_id',$customer_id)->where('cycle_complete',false)->first();
-            if($saving->withdrawable_amount >= $request->amount_withdrawn){
+            $request->amount_withdrawn = empty($request->input('amount_withdrawn'))? $request->withdrawable_amount : $request->amount_withdrawn;
+            if($balance->amount >= $request->amount_withdrawn){
                 $withdrawal = new Withdrawal;
-                $withdrawal->amount_withdrawn = empty($request->input('amount_withdrawn'))? $request->withdrawable_amount : $request->amount_withdrawn;
+                $withdrawal->amount_withdrawn = $request->amount_withdrawn;
                 //$withdrawal->amount_withdrawn = $request->amount_withdrawn;
                 $withdrawal->disbursed_by = Auth::id();
                 $withdrawal->customer_id = $customer_id;
                 if ($withdrawal->save()) {
                     //update customer current savings
-                    $saving->withdrawable_amount -= $withdrawal->amount_withdrawn;
-                    $saving->saving_cycle_total -= $withdrawal->amount_withdrawn;
-                    $saving->save();
-                    //update customer balance
-                    $balance->amount -= $withdrawal->amount_withdrawn;
-                    $balance->save();
+                    if( $saving && ($withdrawal->amount_withdrawn > ($balance->amount - $saving->withdrawable_amount))){
+                        $saving->withdrawable_amount -= ($withdrawal->amount_withdrawn - $balance->amount);
+                        $saving->saving_cycle_total -= ($withdrawal->amount_withdrawn - $balance->amount);
+                        $saving->save();
+                    }
+                    else{
+                        //update customer balance
+                        $balance->amount -= $withdrawal->amount_withdrawn;
+                        $balance->save();
+                    }
                     //record transaction
                     if($this->record_transaction('savings','disburse',0 - $withdrawal->amount_withdrawn,$customer_id,Auth::id())){
                         session()->flash('info','Withdrawal successfully recorded.');

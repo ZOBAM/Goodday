@@ -61,7 +61,7 @@ class AdminController extends Controller
                 'phone_number'   => 'required|string|min:11|max:14',
                 'bvn'        => 'required|numeric|min:10000000000',
                 'email'        => 'required|string|email|max:55|unique:users',
-                'passport'        => 'image|mimes:jpeg,png,jpg|max:2024',
+                'passport'        => 'image|mimes:jpeg,png,jpg|max:10240',
                 'password'        => 'nullable|required|string|min:8|confirmed',
             ]);
             $user = new User;
