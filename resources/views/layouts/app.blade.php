@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/vue.js') }}"></script>
+    <script src="{{ asset('js/axios.js') }}"></script>
     <script src="{{ asset('js/all.js') }}"></script>
 
     <!-- Fonts -->
@@ -54,16 +55,16 @@
                                     </li>
                                 @endif -->
                             @else
-                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
+                                <li class="nav-item {{ $variable_arr['customers_link_active']?? '' }}">
                                     <a href="/customers" class="nav-link"><i class="fas fa-address-book"></i> Customers</a>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
+                                <li class="nav-item {{ $variable_arr['savings_link_active']?? '' }}">
                                     <a href="/savings" class="nav-link"><i class="fas fa-tree"></i> Savings</a>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
+                                <li class="nav-item {{ $variable_arr['loans_link_active']?? '' }}">
                                     <a href="/loans" class="nav-link"><i class="fas fa-money-check"></i> Loan</a>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['navbar_link_active']? 'active':'' }}">
+                                <li class="nav-item {{ $variable_arr['transactions_link_active']?? ''  }}">
                                     <a href="/transactions" class="nav-link"><i class="fas fa-book"></i> Transactions</a>
                                 </li>
                                 <li class="nav-item dropdown">

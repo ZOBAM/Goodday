@@ -95,7 +95,7 @@
                 </tr>
                 @foreach($variable_arr['current_due_dates'] as $due_repay)
                     <tr>
-                        <td>{{$due_repay->install_number}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$due_repay->amount_repaid}}</td>
                         <td>{{date("d F, Y",strtotime($due_repay->due_date))}}</td>
                         <td>
@@ -184,7 +184,9 @@
         @foreach($variable_arr['repay_loans'] as $loan)
         <tr>
             <td>{{$loop->iteration}}</td>
-            <td>{{$loan->customer->full_name}}</td>
+            <td>
+                <a href="/loans/repayment?account_number={{substr($loan->customer->account_number,2,8)}}">{{$loan->customer->full_name}}</a>
+            </td>
             <td>{{$loan->amount}}</td>
             <td>{{$loan->repay_amount}}</td>
             <td>{{$loan->outstanding_amount}}</td>

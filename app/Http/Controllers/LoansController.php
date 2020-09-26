@@ -64,7 +64,7 @@ class LoansController extends Controller
             $loan_repay_id = $customer_id;
             $loan_repayment = Loan_repayment::findOrFail($loan_repay_id);
             $loan = Loan::findOrFail($loan_repayment->loan_id);
-            $ppp = (10/100) * $loan->amount; //ppp = part payment penalty
+            $ppp = (10/100) * $loan->outstanding_amount; //ppp = part payment penalty
             if($part_repaid >= $ppp){
                 $loan_repayment->amount_repaid -= ($part_repaid - $ppp);
                 $loan->outstanding_amount -= ($part_repaid - $ppp);
@@ -126,7 +126,7 @@ class LoansController extends Controller
             $loan->duration = $request->duration;
             $loan->repay_interval = $request->repay_interval;
             $loan->application_date = $request->application_date;
-            $loan->repay_unit = $request->amount/3;
+            $loan->repay_unit = $request->amount/3;//this is mock data will be replaced down the line;
             $loan->outstanding_amount = $loan->repay_amount;
             $loan->first_repay_date = $request->first_repay_date;
             if($loan->save()){
@@ -147,6 +147,7 @@ class LoansController extends Controller
                         }
                         break;
                     case 'weekly':
+                        $loan->duration = floor($loan->duration/28) * 28;
                         $num_of_payments = $loan->duration/7;
                         $loan->repay_unit = $loan->repay_amount/$num_of_payments;
                         //$loan->last_repay_date = $request->first_repay_date;

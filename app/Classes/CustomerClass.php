@@ -1,7 +1,7 @@
 <?php
 namespace App\Classes;
 use Carbon\Carbon;
-use App\{User,Customer,Balance,Transaction, Loan};
+use App\{User,Customer,Balance,Transaction, Loan, Group};
 use Auth;
 
 class CustomerClass {
@@ -21,7 +21,7 @@ class CustomerClass {
     private $comment;
     private $gday_balance;
 
-    public function __construct($type, $subtype, $amount, $customer_id, $staff_id,$update_account){
+    public function __construct($type, $subtype, $amount, $customer_id, $staff_id,$update_account = false){
         $this->transaction_count = Transaction::count();
         $this->transaction = new Transaction;
         $this->gday_balance = Balance::where('id',1)->first();
@@ -124,6 +124,24 @@ class CustomerClass {
     public function update_account(){
         $this->gday_balance->amount += $this->amount;
         $this->gday_balance->save();
+    }
+    public function remove_from_group($customer_id){
+        $customer = Customer::findOrFail($customer_id);
+        $customer->group_id = null;
+        $search_term = ','.$customer_id.',';
+        if($customer->save()){
+            $group = Group::where('members', 'LIKE', "%$search_term%")->first();
+            $group->members = str_replace($search_term,',',$group->members);
+            if($group->leader_id == $customer_id){
+                $group->leader_id = null;
+            }
+            if ($group->secretary_id == $customer_id) {
+                $group->secretary_id = null;
+            }
+            $group->population -= 1;
+            $group->save();
+            return "$customer->full_name has been removed from the Group \"$group->name\" Successfully";
+        }
     }
 }
 ?>

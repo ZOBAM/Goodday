@@ -31,7 +31,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="amount">Loan Amount(₦)*:</label>
-                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(₦)" name="amount" value="{{ old('amount') }}" min="1000" max="{{Session()->get('current_customer')->balance_amount * 10}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
+                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(₦)" name="amount" value="{{ old('amount') }}" min="1000" max="{{$variable_arr['max_loan_amount']}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
                     @error('amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -57,11 +57,12 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="duration">Duration of Loan:</label>
+                    <label for="duration">Duration of Loan*:</label>
                     <select class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration') }}" required v-model = "duration">
                         <option value="30">One Month</option>
                         <option value="90">Three Months</option>
                         <option value="120">Four Months</option>
+                        <option value="150">Five Months</option>
                         <option value="180">Six Months</option>
                     </select>
                     @error('duration')
@@ -89,7 +90,7 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="repay_interval">Repay Interval:</label>
+                    <label for="repay_interval">Repay Interval*:</label>
                     <select class="form-control @error('repay_interval') is-invalid @enderror" id="repay_interval" name="repay_interval" value="{{ old('repay_interval') }}" required>
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -104,7 +105,7 @@
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="first_repay_date">First Repay Date:</label>
+                    <label for="first_repay_date">First Repay Date*:</label>
                     <input type="date" class="form-control @error('first_repay_date') is-invalid @enderror" id="first_repay_date" name="first_repay_date" value="{{ old('first_repay_date') }}" required>
                     @error('first_repay_date')
                         <span class="invalid-feedback" role="alert">
@@ -149,7 +150,7 @@ var app = new Vue({
     loanFee : 20,
     showSubmit : true,
     paidFee : [],
-    duration : 7
+    duration : 30
   },
   methods:{
       getLoanFee : function(){

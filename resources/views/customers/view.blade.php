@@ -1,3 +1,6 @@
+@if(session()->has('info'))
+    @include('layouts.notification')
+@endif
 @isset($variable_arr['customers'])
 <h3 class="card-title text-center">List of Customers</h3>
     <table class="table table-responsive table-striped table-hover">
@@ -55,35 +58,82 @@
                 <tr>
                     <td>Phone No.: </td><td>{{$variable_arr['customer']->phone_number}}</td>
                 </tr>
+                @if($variable_arr['customer']->email)
                 <tr>
                     <td>Email Address: </td><td>{{$variable_arr['customer']->email}}</td>
                 </tr>
+                @endif
+                @if($variable_arr['customer']->state)
                 <tr>
                     <td>State: </td><td>{{$variable_arr['customer']->state}}</td>
                 </tr>
                 <tr>
                     <td>LGA: </td><td>{{$variable_arr['customer']->lga}}</td>
                 </tr>
-                </tr>
                 <tr>
                     <td>Community: </td><td>{{$variable_arr['customer']->community}}</td>
                 </tr>
-                </tr>
+                @endif
+                @if($variable_arr['customer']->full_address)
                 <tr>
                     <td>Full Address: </td><td>{{$variable_arr['customer']->full_address}}</td>
                 </tr>
-                </tr>
+                @endif
+                @if($variable_arr['customer']->next_of_kin)
                 <tr>
                     <td>Next of Kin: </td><td>{{$variable_arr['customer']->next_of_kin}}</td>
                 </tr>
+                @endif
+                @if($variable_arr['customer']->next_of_kin)
                 <tr>
                     <td>Poverty Index: </td><td>{{$variable_arr['customer']->poverty_index}}</td>
                 </tr>
+                @endif
                 <tr>
                     <td>Date Created: </td><td>{{$variable_arr['customer']->created_at}}</td>
                 </tr>
             </table>
         </div>
+        <div class="add-to-group-wrapper">
+            @if($variable_arr['customer']->group)
+            Add {{$variable_arr['customer']->full_name}} to a group.
+            <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/groups/{{$variable_arr['customer']->id}}/add">
+                {{ csrf_field() }}
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <select class="form-control @error('group') is-invalid @enderror" id="group" name="group" required>
+                                <option value="">--select group--</option>
+                                @foreach($variable_arr['customer']->group as $group)
+                                <option value="{{$group->id}}">{{$group->name}} ({{$group->population}} members)</option>
+                                @endforeach
+                            </select>
+                            @error('group')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row justify-content-center">
+                            <div class="col-*-*">
+                                <button type="submit" class="btn btn-primary" id="submit-ad">Add To Group</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+        @if($variable_arr['is_admin'])
+        <form method="POST" action="/customers/{{$variable_arr['customer']->id}}/delete" >
+            {{csrf_field()}}
+            <div class="row" style="max-width: 550px; margin: auto">
+                <button class="col-sm-12 btn btn-outline-danger" onclick = 'return confirm("{{ Auth::user()->first_name }}, by proceeding you Confirm that you want to PERMANENTLY delete this customer account? Click OK to proceed or CANCEL to return back")'>Delete Customer's Account <i class="fa fa-trash float-right"></i></button>
+            </div>
+        </form>
+        @endif
     </div>
 @endisset
 
