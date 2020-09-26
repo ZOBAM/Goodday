@@ -25,6 +25,7 @@
     </tr>
     @endforeach
     </table>
+    {{ $variable_arr['customers']->links() }}
 @endisset
 @isset($variable_arr['customer'])
     <div id="customer-details">

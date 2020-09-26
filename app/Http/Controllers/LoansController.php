@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\{Customer, Loan, Loan_repayment,Withdrawal,Balance};
+use App\{Customer, Loan, Loan_repayment,Withdrawal,Balance,Transaction};
 use App\Classes\{CustomerClass};
 use Auth;
 
@@ -100,6 +100,27 @@ class LoansController extends Controller
             session()->flash('info','Partial Loan Repayment Saved');
             return back();
             //return "Making part payment ...$loan_repayment  ___________ $ppp";
+        }
+        //DELETE LOAN
+        elseif ($action == 'delete'){
+            $loan_id = $customer_id;
+            $loan = Loan::findOrFail($loan_id);
+            $transactions = Transaction::where('ref_id','like','%LNS'.$loan->customer_id.'%')->orderBy('created_at','DESC')->take(2)->get();
+            $transaction_amount = $transactions[1]->amount;
+            //get company balance and deduct loan fee amount
+            $company_balance = Balance::where('customer_id',1)->first();
+            $company_balance->amount -= $transaction_amount;
+            $company_balance->save();
+            //soft delete the transactions record
+            if(Loan::destroy($loan_id)){
+                foreach($transactions as $transaction){
+                    $transaction->deleted = true;
+                    $transaction->save();
+                }
+            }
+            session()->flash('info','Loan Application has been successfully deleted.');
+            return back();
+            //return "Loan Delete Route Reached. $loan_id | $transaction_amount<br> Comp. Balance: $company_balance->amount";
         }
         //NEW LOAN APPLICATION
         else{

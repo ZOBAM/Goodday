@@ -119,7 +119,11 @@ class MainController extends Controller
                                 $this->SetCurrentCustomer($id);
                             }
                             else{
+<<<<<<< HEAD
                                 $variable_arr['customers'] = Customer::where('id','!=',1)->get();
+=======
+                                $variable_arr['customers'] = Customer::where('id','!=',1)->orderBy('created_at','DESC')->paginate(10);
+>>>>>>> 5d62599831b63e1e26b93580a0b74b730eabd778
                                 foreach($variable_arr['customers'] as $customer){
                                     $balance = Balance::where('customer_id',$customer->id)->first();
                                     if($balance){
@@ -240,6 +244,11 @@ class MainController extends Controller
                         case 'repayment':
                             $section_nav['Loan Repayment']['nav_link_active'] = true;
                             $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                            //get the repayment count for each of the approved loans.
+                            foreach($variable_arr['repay_loans'] as $loan){
+                                $repay_count = Loan_repayment::where('loan_id',$loan->id)->get();
+                                $loan->repay_count = count($repay_count);
+                            }
                             if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
                                 $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
                                 //get the specific repayment with specified id
