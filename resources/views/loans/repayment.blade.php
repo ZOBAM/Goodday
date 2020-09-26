@@ -1,3 +1,6 @@
+@if(session()->has('info'))
+    @include('layouts.notification')
+@endif
 @if($variable_arr['session_isset'])
     <div class="row">
         <div class="col-sm-6 offset-sm-3 text-center">
@@ -10,10 +13,7 @@
             {{Session()->get('current_customer')->surname}}
         </div>
     </div>
-        @if(session()->has('info'))
-            @include('layouts.notification')
-        @endif
-    @if($variable_arr['has_loan'])
+            @if($variable_arr['has_loan'])
         <h5 class="card-title text-center">Below are Outstanding Loan Repayments </h5>
        <!--  <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/loans/{{Session()->get('current_customer')->id}}/repay">
             {{ csrf_field() }}
@@ -95,7 +95,7 @@
                 </tr>
                 @foreach($variable_arr['current_due_dates'] as $due_repay)
                     <tr>
-                        <td>{{$due_repay->install_number}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$due_repay->amount_repaid}}</td>
                         <td>{{date("d F, Y",strtotime($due_repay->due_date))}}</td>
                         <td>
@@ -173,24 +173,38 @@
     <!-- The customer object is not yet set and therefore display the form for getting customer ID -->
     @include('layouts.set_customer_session')
     @if(count($variable_arr['repay_loans'])>0)
-    <table class="table">
-        <tr>
-            <th>S/N</th>
-            <th>Customer Name</th>
-            <th>Loan Amount (N)</th>
-            <th>Repay Amount (N)</th>
-            <th>Outstanding (N)</th>
-        </tr>
-        @foreach($variable_arr['repay_loans'] as $loan)
-        <tr>
-            <td>{{$loop->iteration}}</td>
-            <td>{{$loan->customer->full_name}}</td>
-            <td>{{$loan->amount}}</td>
-            <td>{{$loan->repay_amount}}</td>
-            <td>{{$loan->outstanding_amount}}</td>
-        </tr>
-        @endforeach
-    </table>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>S/N</th>
+                <th>Customer Name</th>
+                <th>Loan Amount (N)</th>
+                <th>Repay Amount (N)</th>
+                <th>Outstanding (N)</th>
+            </tr>
+            @foreach($variable_arr['repay_loans'] as $loan)
+            <tr>
+                <td>{{$loop->iteration}}</td>
+                <td>
+                    <a href="/loans/repayment?account_number={{substr($loan->customer->account_number,2,8)}}">{{$loan->customer->full_name}}</a>
+                </td>
+                <td>{{$loan->amount}}</td>
+                <td>{{$loan->repay_amount}}</td>
+                <td><span title="Repay Count: {{$loan->repay_count}}">{{$loan->outstanding_amount}}</span></td>
+                <td>
+                    @if($variable_arr['is_admin'] && !$loan->loan_cleared && $loan->repay_amount == $loan->outstanding_amount)
+                    <form method="POST" action="/loans/{{$loan->id}}/delete" >
+                        {{csrf_field()}}
+                        <div class="row" style="max-width: 550px; margin: auto">
+                            <button class="col-sm-12 btn btn-outline-danger" onclick = 'return confirm("{{ Auth::user()->first_name }}, by proceeding you Confirm that you want to PERMANENTLY delete this Loan Application? Click OK to proceed or CANCEL to return back")' title = "Delete This Loan" style = "white-space: nowrap;">Delete <i class="fa fa-trash float-right"></i></button>
+                        </div>
+                    </form>
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+        </table>
+    </div>
     {{ $variable_arr['repay_loans']->links() }}
     @else
     There is currently no Loans due for repayment to display.

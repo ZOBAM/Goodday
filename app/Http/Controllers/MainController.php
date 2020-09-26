@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use App\{Customer, Saving, Savings_collection, Withdrawal, Balance, Loan, Loan_repayment, Transaction, User};
+use App\{Customer, Saving, Savings_collection, Withdrawal, Balance, Loan, Loan_repayment, Transaction, User, Group};
 use App\Classes\{CustomerClass, TransactionClass};
 use Auth;
 
@@ -50,14 +50,23 @@ class MainController extends Controller
         }
         //set if staff is admin
         $variable_arr['is_admin'] = (Auth::user()->rank >= 2)? True : false;
-        //set active (for css link class) to false for all
-        $variable_arr['navbar_link_active'] = false;
         //get staffs from db
         $variable_arr['staffs'] = User::get();
-        //check if the current customer already has a loan that is still running
         if (session()->has('current_customer')) {
+            //check if the current customer already has a loan that is still running
             $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
             $variable_arr['current_customer_loan']? $variable_arr['has_loan'] = true : $variable_arr['has_loan'] = false;
+            //check if customer is in group
+            $variable_arr['in_group'] = Customer::where('id',Session()->get('current_customer')->id)->where('group_id','!=',null)->first();
+            $variable_arr['customer_group'] = $variable_arr['in_group']? Group::where('id',$variable_arr['in_group']->group_id)->first():false;
+            //max loan for customer
+            $variable_arr['max_loan_amount'] = Session()->get('current_customer')->balance_amount * 10;
+            //return $variable_arr['in_group'];
+            if($variable_arr['customer_group']){
+                if(Session()->get('current_customer')->balance_amount >= 3000 && Session()->get('current_customer')->balance_amount < 5000){
+                    $variable_arr['max_loan_amount'] =  50000;
+                }
+            }
         }
         //end session
         if(isset($_GET['end_session'])){
@@ -74,6 +83,7 @@ class MainController extends Controller
             switch($section){
                 case 'customers'://HANDLE CUSTOMER SECTION
                     $action = $action? $action : 'view';
+                    $variable_arr['customers_link_active'] = 'active';
                     $section_nav = [
                         'Create New Account'          =>  ['link' => '/customers/create','icon' => 'user-plus'],
                         'Update Customer Account'     =>  ['link' => '/customers/edit','icon' => 'user-edit'],
@@ -104,11 +114,12 @@ class MainController extends Controller
                                 $variable_arr['customer'] = Customer::findOrFail($id);
                                 $balance = Balance::where('customer_id',$id)->first();
                                 $variable_arr['customer']->balance = $balance->amount??0;
+                                $variable_arr['customer']->group = ($variable_arr['customer']->group_id != null)? false : Group::get();
                                 //set current customer session
                                 $this->SetCurrentCustomer($id);
                             }
                             else{
-                                $variable_arr['customers'] = Customer::get();
+                                $variable_arr['customers'] = Customer::where('id','!=',1)->orderBy('created_at','DESC')->paginate(10);
                                 foreach($variable_arr['customers'] as $customer){
                                     $balance = Balance::where('customer_id',$customer->id)->first();
                                     if($balance){
@@ -123,6 +134,21 @@ class MainController extends Controller
                         case 'groups':
                             $section_nav['Customers Groups']['nav_link_active'] = true;
                             $variable_arr['staffs'] = User::where('rank','>',0)->get();
+                            $variable_arr['groups'] = Group::get();
+                            if(is_numeric($id)){
+                                $variable_arr['group'] = Group::findOrFail($id);
+                                foreach($variable_arr['group']->customer as $customer){
+                                    if($variable_arr['group']->leader_id == $customer->id){
+                                        $customer->position = 'Leader';
+                                    }
+                                    elseif($variable_arr['group']->secretary_id == $customer->id){
+                                        $customer->position = 'Secretary';
+                                    }
+                                    else{
+                                        $customer->position = 'Member';
+                                    }
+                                }
+                            }
                         break;
                         default:
                         return redirect('/customer');
@@ -131,6 +157,7 @@ class MainController extends Controller
                 break;
                 case 'savings'://HANDLE SAVING SECTION
                     $variable_arr['require_session'] = true;
+                    $variable_arr['savings_link_active'] = 'active';
                     //$variable_arr['unit_amount'] = $variable_arr['unit_amount']->unit_amount;
                     //return $variable_arr['unit_amount'];
                     if(!$variable_arr['session_isset']){
@@ -176,11 +203,13 @@ class MainController extends Controller
                         }
                     }
                     $action = $action? $action : 'repayment';
+                    $variable_arr['loans_link_active'] = 'active';
                     $section_nav = [
                         'New Loan Application'  =>  ['link' => '/loans/create','icon' => 'plus'],
                         'Pending Loans'         =>  ['link' => '/loans/pending','icon' => 'circle'],
                         'Approved Loans'        =>  ['link' => '/loans/approved','icon' => 'check'],
-                        'Loan Repayment'        =>  ['link' => '/loans/repayment','icon' => 'pen']
+                        'Loan Repayment'        =>  ['link' => '/loans/repayment','icon' => 'pen'],
+                        'Loans Due Today'       =>  ['link' => '/loans/due_today','icon' => 'bullseye']
                     ];
                     switch($action){
                         case 'create':
@@ -211,8 +240,17 @@ class MainController extends Controller
                         case 'repayment':
                             $section_nav['Loan Repayment']['nav_link_active'] = true;
                             $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                            //get the repayment count for each of the approved loans.
+                            foreach($variable_arr['repay_loans'] as $loan){
+                                $repay_count = Loan_repayment::where('loan_id',$loan->id)->get();
+                                $loan->repay_count = count($repay_count);
+                            }
                             if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
                                 $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                //get the specific repayment with specified id
+                                if($id){
+                                    $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                }
                                 $variable_arr['unpaid_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->where('repaid',false)->first();
                                 /* if($variable_arr['unpaid_due_dates']){
                                     $first_due_date = Carbon::createFromDate($variable_arr['unpaid_due_dates']->due_date);
@@ -246,11 +284,24 @@ class MainController extends Controller
                                     }
                                 } */
                             }
+                            else{
+                                if($id){
+                                $repayment = Loan_repayment::findOrFail($id);
+                                $this->SetCurrentCustomer($repayment->loan->customer_id);
+                                //get the specific repayment with specified id
+                                    $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                }
+                            }
+                        break;
+                        case 'due_today':
+                            $variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', Carbon::today())->where('repaid',false)->paginate(10);
+                            //return $variable_arr['loans_due_today'][0]->loan;
                         break;
                     }
                     //return $section_nav;
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
+                    $variable_arr['transactions_link_active'] = 'active';
                     $staff_set = false;
                     if($id){
                         $staff_set = $id;

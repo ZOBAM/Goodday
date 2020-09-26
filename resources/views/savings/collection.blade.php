@@ -67,11 +67,11 @@
                     </tr>
                 </thead>
                 @foreach(Session()->get('current_customer')->savings as $saving)
-                <tr>
+                <tr class = "{!! $saving->cycle_complete? 'locked-row':'unlocked-row' !!}">
                     <td>{{$loop->iteration}}</td>
                     <td>{{Session()->get('current_customer')->full_name}}</td>
                     <td>{{$saving->unit_amount}}</td>
-                    <td>{{$saving->collection_count}}</td>
+                    <td>{{$saving->collection_count}} {!! $saving->cycle_complete? '<i class="fa fa-lock float-right"></i>':'<i class="fa fa-lock-open float-right"></i>' !!}</td>
                     <td>₦{{$saving->saving_cycle_peak}}</td>
                     <td>{{date('d M, Y',strtotime($saving->created_at))}}</td>
                     <!-- <td>{{date('d M, Y',strtotime($saving->updated_at))}}</td> -->

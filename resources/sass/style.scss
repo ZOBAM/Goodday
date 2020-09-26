@@ -10,10 +10,21 @@ header{
 }
 nav{
     img{max-width: 7em;}
+    .container{
+        .active{
+            border: 2px groove #6C8D9E; background-color: #f3f5f6; margin-bottom: -9px;
+            border-bottom: 0px;
+            border-top-left-radius: 1vh; border-top-right-radius: 2vh;
+            a{
+                color: #fff; font-weight: bolder;
+            }
+        }
+    }
 }
 nav.navbar{
     width: 100%;
-    position: absolute;bottom: 0px;}
+    position: absolute;bottom: 0px;
+}
 #left-nav{
     //border: 1px solid red;
     color: rgb(95, 7, 7);
@@ -50,12 +61,20 @@ nav.navbar{
         text-align: right;
         color: purple;
     }
+    .add-to-group-wrapper{
+        margin-top: 1em;
+        border-top: 1vh dashed #dad7d7;
+    }
 }
 .buttonClicked{
     border: 2px groove #00BBBB;
     background-color: #b8e3eb;
     font-weight: bolder;
     white-space: nowrap;
+}
+.unlocked-row{
+    background-color: rgb(184, 255, 112);
+    font-weight: bolder;
 }
 footer{
     font-size: larger; font-weight: bolder;

@@ -79,8 +79,16 @@
                     <div class="form-group">
                         <label for="nok_relationship">Relationship:</label>
                         <select class="form-control @error('nok_relationship') is-invalid @enderror" id="nok_relationship" name="nok_relationship" >
+                            <option value="">--Relationship--</option>
+                            <option value="brother">Brother</option>
+                            <option value="sister">Daughter</option>
                             <option value="father">Father</option>
+                            <option value="friend">Friend</option>
                             <option value="husband">Husband</option>
+                            <option value="mother">Mother</option>
+                            <option value="sister">Sister</option>
+                            <option value="sister">Son</option>
+                            <option value="wife">Wife</option>
                         </select>
                         @error('nok_relationship')
                             <span class="invalid-feedback" role="alert">
@@ -213,13 +221,16 @@
                     <div class="form-group">
                         <label for="grelationship">Relationship:</label>
                         <select class="form-control @error('grelationship') is-invalid @enderror" id="grelationship" name="grelationship" required>
-                            <option value="father">Father</option>
-                            <option value="mother">Mother</option>
-                            <option value="wife">Wife</option>
-                            <option value="husband">Husband</option>
+                            <option value="">--Relationship--</option>
                             <option value="brother">Brother</option>
-                            <option value="sister">Sister</option>
+                            <option value="sister">Daughter</option>
+                            <option value="father">Father</option>
                             <option value="friend">Friend</option>
+                            <option value="husband">Husband</option>
+                            <option value="mother">Mother</option>
+                            <option value="sister">Sister</option>
+                            <option value="sister">Son</option>
+                            <option value="wife">Wife</option>
                         </select>
                         @error('grelationship')
                             <span class="invalid-feedback" role="alert">

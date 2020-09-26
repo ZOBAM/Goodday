@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\{Customer, Loan, Loan_repayment,Withdrawal,Balance};
+use App\{Customer, Loan, Loan_repayment,Withdrawal,Balance,Transaction};
 use App\Classes\{CustomerClass};
 use Auth;
 
@@ -64,7 +64,7 @@ class LoansController extends Controller
             $loan_repay_id = $customer_id;
             $loan_repayment = Loan_repayment::findOrFail($loan_repay_id);
             $loan = Loan::findOrFail($loan_repayment->loan_id);
-            $ppp = (10/100) * $loan->amount; //ppp = part payment penalty
+            $ppp = (10/100) * $loan->outstanding_amount; //ppp = part payment penalty
             if($part_repaid >= $ppp){
                 $loan_repayment->amount_repaid -= ($part_repaid - $ppp);
                 $loan->outstanding_amount -= ($part_repaid - $ppp);
@@ -101,6 +101,27 @@ class LoansController extends Controller
             return back();
             //return "Making part payment ...$loan_repayment  ___________ $ppp";
         }
+        //DELETE LOAN
+        elseif ($action == 'delete'){
+            $loan_id = $customer_id;
+            $loan = Loan::findOrFail($loan_id);
+            $transactions = Transaction::where('ref_id','like','%LNS'.$loan->customer_id.'%')->orderBy('created_at','DESC')->take(2)->get();
+            $transaction_amount = $transactions[1]->amount;
+            //get company balance and deduct loan fee amount
+            $company_balance = Balance::where('customer_id',1)->first();
+            $company_balance->amount -= $transaction_amount;
+            $company_balance->save();
+            //soft delete the transactions record
+            if(Loan::destroy($loan_id)){
+                foreach($transactions as $transaction){
+                    $transaction->deleted = true;
+                    $transaction->save();
+                }
+            }
+            session()->flash('info','Loan Application has been successfully deleted.');
+            return back();
+            //return "Loan Delete Route Reached. $loan_id | $transaction_amount<br> Comp. Balance: $company_balance->amount";
+        }
         //NEW LOAN APPLICATION
         else{
             $this->validate($request, [
@@ -126,7 +147,7 @@ class LoansController extends Controller
             $loan->duration = $request->duration;
             $loan->repay_interval = $request->repay_interval;
             $loan->application_date = $request->application_date;
-            $loan->repay_unit = $request->amount/3;
+            $loan->repay_unit = $request->amount/3;//this is mock data will be replaced down the line;
             $loan->outstanding_amount = $loan->repay_amount;
             $loan->first_repay_date = $request->first_repay_date;
             if($loan->save()){
@@ -147,6 +168,7 @@ class LoansController extends Controller
                         }
                         break;
                     case 'weekly':
+                        $loan->duration = floor($loan->duration/28) * 28;
                         $num_of_payments = $loan->duration/7;
                         $loan->repay_unit = $loan->repay_amount/$num_of_payments;
                         //$loan->last_repay_date = $request->first_repay_date;

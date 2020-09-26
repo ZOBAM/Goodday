@@ -9,6 +9,7 @@ use Auth;
 
 class SavingsController extends Controller
 {
+    private $company_account_id = 1;
     public function record_transaction($type,$subtype,$amount,$customer_id,$staff_id,$update_account=false){
         $customer_class = new CustomerClass($type,$subtype,$amount,$customer_id,$staff_id,$update_account);
         $customer_class->save_transaction();
@@ -101,8 +102,9 @@ class SavingsController extends Controller
                 $saving->save();
                 $balance = Balance::where('customer_id',$customer_id)->first();
                 $balance->amount -= $withdrawal->amount_withdrawn;
+                $balance->amount -= $saving->unit_amount;
                 $balance->save();
-                if($this->record_transaction('savings','close',0 - $saving->withdrawable_amount,$customer_id,Auth::id())){
+                if($this->record_transaction('savings','close',0 - $withdrawal->amount_withdrawn,$customer_id,Auth::id())){
                     $this->record_transaction('savings','collection', $saving->unit_amount,1,Auth::id(),true);
                     session()->flash('info','Saving Cycle successfully closed.');
                     Session()->get('current_customer')->balance_amount -= $withdrawal->amount_withdrawn;
