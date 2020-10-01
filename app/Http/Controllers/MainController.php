@@ -288,9 +288,16 @@ class MainController extends Controller
                             else{
                                 if($id){
                                 $repayment = Loan_repayment::findOrFail($id);
+                                //set the current user
                                 $this->SetCurrentCustomer($repayment->loan->customer_id);
+                                
+                                $current_url = url()->current();//get current url
+                                if(!isset($_GET['rw'])){
+                                    return redirect($current_url.'?rw=true');
+                                }
+                                return $current_url;
                                 //get the specific repayment with specified id
-                                    $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
                                 }
                             }
                         break;

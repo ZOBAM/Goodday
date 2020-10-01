@@ -173,28 +173,6 @@
     <!-- The customer object is not yet set and therefore display the form for getting customer ID -->
     @include('layouts.set_customer_session')
     @if(count($variable_arr['repay_loans'])>0)
-<<<<<<< HEAD
-    <table class="table">
-        <tr>
-            <th>S/N</th>
-            <th>Customer Name</th>
-            <th>Loan Amount (N)</th>
-            <th>Repay Amount (N)</th>
-            <th>Outstanding (N)</th>
-        </tr>
-        @foreach($variable_arr['repay_loans'] as $loan)
-        <tr>
-            <td>{{$loop->iteration}}</td>
-            <td>
-                <a href="/loans/repayment?account_number={{substr($loan->customer->account_number,2,8)}}">{{$loan->customer->full_name}}</a>
-            </td>
-            <td>{{$loan->amount}}</td>
-            <td>{{$loan->repay_amount}}</td>
-            <td>{{$loan->outstanding_amount}}</td>
-        </tr>
-        @endforeach
-    </table>
-=======
     <div class="table-responsive">
         <table class="table">
             <tr>
@@ -227,7 +205,6 @@
             @endforeach
         </table>
     </div>
->>>>>>> 5d62599831b63e1e26b93580a0b74b730eabd778
     {{ $variable_arr['repay_loans']->links() }}
     @else
     There is currently no Loans due for repayment to display.
