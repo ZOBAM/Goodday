@@ -119,11 +119,8 @@ class MainController extends Controller
                                 $this->SetCurrentCustomer($id);
                             }
                             else{
-<<<<<<< HEAD
                                 $variable_arr['customers'] = Customer::where('id','!=',1)->get();
-=======
                                 $variable_arr['customers'] = Customer::where('id','!=',1)->orderBy('created_at','DESC')->paginate(10);
->>>>>>> 5d62599831b63e1e26b93580a0b74b730eabd778
                                 foreach($variable_arr['customers'] as $customer){
                                     $balance = Balance::where('customer_id',$customer->id)->first();
                                     if($balance){
