@@ -290,7 +290,7 @@ class MainController extends Controller
                                 $repayment = Loan_repayment::findOrFail($id);
                                 //set the current user
                                 $this->SetCurrentCustomer($repayment->loan->customer_id);
-                                
+                                //reload the page to enforce the session changes (this should be changed later)
                                 $current_url = url()->current();//get current url
                                 if(!isset($_GET['rw'])){
                                     return redirect($current_url.'?rw=true');
