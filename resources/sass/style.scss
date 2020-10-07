@@ -5,7 +5,7 @@ body{
 }
 header{
     min-height: 140px; background-color: grey;position: relative;
-    background-image: url('/images/gdheader.png');
+    //background-image: url('/images/gdheader.png');
     background-size: cover;
 }
 nav{
@@ -23,7 +23,7 @@ nav{
 }
 nav.navbar{
     width: 100%;
-    position: absolute;bottom: 0px;
+    //position: absolute;bottom: 0px;
 }
 #left-nav{
     //border: 1px solid red;

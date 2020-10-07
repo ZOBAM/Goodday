@@ -27,7 +27,8 @@
 <body>
     <div id="app">
         <header >
-            <nav class="navbar navbar-expand-sm navbar-light bg-white shadow-sm">
+            <img src="{{ asset('images/gdheader.png') }}" alt="good day logo" style="max-width: 100%;">
+            <nav class="navbar navbar-expand-sm navbar-light bg-white shadow-sm sticky-top">
                 <div class="container">
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="{{ asset('images/gdaylogo.png') }}" alt="good day logo">
@@ -54,22 +55,86 @@
                                         <a class="nav-link" href="{{ route('register') }}"><i class = "fas fa-user-plus"></i> {{ __('Register') }}</a>
                                     </li>
                                 @endif -->
-                            @else
-                                <li class="nav-item {{ $variable_arr['customers_link_active']?? '' }}">
-                                    <a href="/customers" class="nav-link"><i class="fas fa-address-book"></i> Customers</a>
+                            @else                             
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle {{ $variable_arr['customers_link_active']?? '' }}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="fas fa-address-book"></i> Customers <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/customers/create">
+                                            <i class="fas fa-user-plus"></i> Create New Account
+                                        </a>
+                                        <a class="dropdown-item" href="/customers/edit">
+                                            <i class="fas fa-user-edit"></i> Update Customer Account
+                                        </a>
+                                        <a class="dropdown-item" href="/customers/view">
+                                            <i class="fas fa-eye"></i> View Customers Accounts
+                                        </a>
+                                        <a class="dropdown-item" href="/customers/groups">
+                                            <i class="fas fa-layer-group"></i> Customers Groups
+                                        </a>
+                                    </div>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['savings_link_active']?? '' }}">
-                                    <a href="/savings" class="nav-link"><i class="fas fa-tree"></i> Savings</a>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle {{ $variable_arr['savings_link_active']?? '' }}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="fas fa-tree"></i></i> Savings <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/savings/create">
+                                            <i class="fas fa-plus"></i></i> Start New Saving
+                                        </a>
+                                        <a class="dropdown-item" href="/savings/collection">
+                                            <i class="fas fa-money-bill-alt"></i></i> Record Saving Collection
+                                        </a>
+                                        <a class="dropdown-item" href="/savings/disburse">
+                                            <i class="fas fa-money-bill"></i></i> Withdraw From Saving
+                                        </a>
+                                        <a class="dropdown-item" href="/savings/close_saving">
+                                            <i class="fas fa-circle-notch"></i></i> Close Saving
+                                        </a>
+                                    </div>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['loans_link_active']?? '' }}">
-                                    <a href="/loans" class="nav-link"><i class="fas fa-money-check"></i> Loan</a>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle {{ $variable_arr['loans_link_active']?? '' }}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="fas fa-money-check"></i> Loans <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/loans/create">
+                                            <i class="fas fa-plus"></i> New Loan Application
+                                        </a>
+                                        <a class="dropdown-item" href="/loans/pending">
+                                            <i class="fas fa-circle"></i> Pending Loans
+                                        </a>
+                                        <a class="dropdown-item" href="/loans/approved">
+                                            <i class="fas fa-check"></i> Approved Loans
+                                        </a>
+                                        <a class="dropdown-item" href="/loans/repayment">
+                                            <i class="fas fa-pen"></i> Loan Repayment
+                                        </a>
+                                        <a class="dropdown-item" href="/loans/due_today">
+                                            <i class="fas fa-bullseye"></i> Loans Due Today
+                                        </a>
+                                    </div>
                                 </li>
-                                <li class="nav-item {{ $variable_arr['transactions_link_active']?? ''  }}">
-                                    <a href="/transactions" class="nav-link"><i class="fas fa-book"></i> Transactions</a>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle {{ $variable_arr['transactions_link_active']?? '' }}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="fas fa-book"></i> Transactions <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/transactions/today">
+                                            <i class="fas fa-file"></i> Today's Transactions
+                                        </a>
+                                        <a class="dropdown-item" href="/transactions/week">
+                                            <i class="fas fa-file-alt"></i> This Week's Transactions
+                                        </a>
+                                        <a class="dropdown-item" href="/transactions/month">
+                                            <i class="fas fa-file-archive"></i> This Month's Transactions
+                                        </a>
+                                    </div>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    <img src="{{ asset('images/staffs/'.Auth::user()->passport ) }}" alt="good day logo" width = "20px"> {{ Auth::user()->first_name }} <span class="caret"></span>
+                                    <img src="{{ asset('images/staffs/'.Auth::user()->passport ) }}" alt="staff dp" width = "20px"> {{ Auth::user()->first_name }} <span class="caret"></span>
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">

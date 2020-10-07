@@ -44,7 +44,8 @@ class User extends Authenticatable
 
     //set default passport for staffs
     public function getPassportAttribute(){
-        $passport = $this->passport_link == null? "staff_img_placeholder.png" : $this->passport_link;
+        $staff_dp_path = (is_dir(public_path("../../public/images/")))? public_path("../../public/images/staffs/$this->passport_link"):"images/staffs/$this->passport_link" ;
+        $passport = ($this->passport_link == null || !file_exists($staff_dp_path))? "staff_img_placeholder.png" : $this->passport_link;
         return $passport;
     }
 
