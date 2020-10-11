@@ -95,9 +95,29 @@
                 <tr>
                     <td>Date Created: </td><td>{{$variable_arr['customer']->created_at}}</td>
                 </tr>
-                <tr>
-                    <td colspan="2">Guarantor's Details</td>
+                @if($variable_arr['customer']->guarantor)
+                <tr style="background-color: cornflowerblue; color: white;">
+                    <td colspan="2" class="text-center" style="color: inherit">Guarantor's Details</td>
                 </tr>
+                <tr>
+                    <td>Full Name: </td><td>{{$variable_arr['customer']->guarantor->gfull_name}}</td>
+                </tr>
+                <tr>
+                    <td>Phone No.: </td><td>{{$variable_arr['customer']->guarantor->gphone_number}}</td>
+                </tr>
+                <tr>
+                    <td>Res. Address: </td><td>{{$variable_arr['customer']->guarantor->gresident_address}}</td>
+                </tr>
+                <tr>
+                    <td>Work Address: </td><td>{{$variable_arr['customer']->guarantor->gwork_address}}</td>
+                </tr>
+                <tr>
+                    <td>Relationship: </td><td>{{$variable_arr['customer']->guarantor->grelationship}}</td>
+                </tr>
+                <tr>
+                    <td>Occupation: </td><td>{{$variable_arr['customer']->guarantor->goccupation}}</td>
+                </tr>
+                @endif
             </table>
         </div>
         <div class="add-to-group-wrapper">

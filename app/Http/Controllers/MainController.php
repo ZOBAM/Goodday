@@ -22,7 +22,6 @@ class MainController extends Controller
             else{//set current customer session
                 $savings = Saving::where('customer_id',$customer->id)->get();
                 $balance = Balance::where('customer_id',$customer->id)->first();
-                $customer->guarantor = Guarantor::where('customer_id',$customer->id)->first();
                 //return $savings;
                 $customer->savings = $savings;
                 $customer->balance_amount = $balance->amount;
@@ -116,6 +115,7 @@ class MainController extends Controller
                                 $balance = Balance::where('customer_id',$id)->first();
                                 $variable_arr['customer']->balance = $balance->amount??0;
                                 $variable_arr['customer']->group = ($variable_arr['customer']->group_id != null)? false : Group::get();
+                                $variable_arr['customer']->guarantor = Guarantor::where('customer_id',$id)->first();
                                 //set current customer session
                                 $this->SetCurrentCustomer($id);
                             }
