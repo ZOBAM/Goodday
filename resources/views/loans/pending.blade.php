@@ -1,13 +1,11 @@
 @if(session()->has('info'))
         @include('layouts.notification')
 @endif
-@if($variable_arr['session_isset'])
 <div class="row">
     <div class="col-sm-6 offset-sm-3 text-center">
         <h2>Loans Awaiting Approval</h2>
     </div>
 </div>
-@endif
 @if(count($variable_arr['pending_loans'])>0)
 <div class="table-responsive">
     <table class="table">

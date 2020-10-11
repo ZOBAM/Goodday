@@ -60,7 +60,7 @@ class CustomersController extends Controller
             'email'             => 'nullable|email|max:100|min:5',
             'poverty_index'     => 'nullable|numeric|max:100|min:3',
             'gender'            => 'nullable|string|max:6|min:4',
-            'customer_passport' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'customer_passport' => 'image|mimes:jpeg,png,jpg|max:5120',
         ]);
         if($customer_id){//Means account is being updated
             $customer = Customer::findOrFail($customer_id);

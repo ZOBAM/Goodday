@@ -2,6 +2,15 @@
 @if(session()->has('info'))
     @include('layouts.notification')
 @else
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <h5 class="card-title text-center">Fields Mark With (*) Are Required</h5>
     <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = '/customers'>
         {{ csrf_field() }}

@@ -3,7 +3,8 @@
 @endif
 @isset($variable_arr['customers'])
 <h3 class="card-title text-center">List of Customers</h3>
-    <table class="table table-responsive table-striped table-hover">
+    <div class = "table-responsive ">
+    <table class="table table-striped table-hover">
         <tr>
             <th>S/N</th>
             <th>Full Name</th>
@@ -26,6 +27,7 @@
     @endforeach
     </table>
     {{ $variable_arr['customers']->links() }}
+    </div>
 @endisset
 @isset($variable_arr['customer'])
     <div id="customer-details">
@@ -92,6 +94,9 @@
                 @endif
                 <tr>
                     <td>Date Created: </td><td>{{$variable_arr['customer']->created_at}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Guarantor's Details</td>
                 </tr>
             </table>
         </div>

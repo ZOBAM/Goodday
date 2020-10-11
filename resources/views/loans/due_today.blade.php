@@ -1,10 +1,9 @@
-@if($variable_arr['session_isset'])
 <div class="row">
     <div class="col-sm-6 offset-sm-3 text-center">
-        <h2>Loans Due For Repayment Today</h2>
+        <h2>Loans  Repayment</h2>
+        <h3>Due For <span style="padding: 4px;background-color: rgb(8, 39, 80);color: rgb(247, 244, 240);">{{date('D d/M/Y',strtotime($variable_arr['due_date']))}}</span></h3>
     </div>
 </div>
-@endif
 @if(count($variable_arr['loans_due_today'])>0)
 <div class = "table-responsive">
     <table class="table">
@@ -27,8 +26,20 @@
         </tr>
         @endforeach
     </table>
-</div>
 {{ $variable_arr['loans_due_today']->links() }}
+</div>
+<div class="row">
+    <a href="/loans/due_today?due_day=yesterday&due_date={{$variable_arr['due_date']}}" class="col text-center">
+        <button class="btn btn-primary">
+            <i class="fa fa-arrow-left"></i> Due Yesterday
+        </button>
+    </a>
+    <a href="/loans/due_today?due_day=tomorrow&due_date={{$variable_arr['due_date']}}" class="col text-center">    
+        <button class="btn btn-primary">
+            Due Tomorrow <i class="fa fa-arrow-right"></i>
+        </button>
+    </a>    
+</div>
 @else
 There is currently no Loan that is due for repayment today.
 @endif

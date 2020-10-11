@@ -1,12 +1,12 @@
 @if(session()->has('info'))
     @include('layouts.notification')
 @endif
-@if($variable_arr['session_isset'])
     <div class="row">
         <div class="col-sm-6 offset-sm-3 text-center">
             <h2>Loans Repayment</h2>
         </div>
     </div>
+@if($variable_arr['session_isset'])
     <div class="row">
         <div class="col-sm-4 offset-sm-4 text-center">
             <img src="{{asset('/images/customers/'.Session()->get('current_customer')->passport_link)}}" alt="" style="max-width: 50px;"><br>
