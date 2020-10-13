@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-sm-6 offset-sm-3 text-center">
         <h2>Loans  Repayment</h2>
-        <h3>Due For <span style="padding: 4px;background-color: rgb(8, 39, 80);color: rgb(247, 244, 240);">{{date('D d/M/Y',strtotime($variable_arr['due_date']))}}</span></h3>
+        <h3>Due For <span style="font-size:smaller;padding: 4px;background-color: rgb(19, 78, 155);color: rgb(247, 244, 240);">{{date('D d/M/Y',strtotime($variable_arr['due_date']))}}</span></h3>
     </div>
 </div>
 @if(count($variable_arr['loans_due_today'])>0)
