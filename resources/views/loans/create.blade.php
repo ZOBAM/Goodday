@@ -7,7 +7,7 @@
 </div>
     @if(session()->has('info'))
         @include('layouts.notification')
-    @elseif($variable_arr['has_loan'])
+    @elseif(Session()->get('current_customer')->has_loan)
         <div class="alert alert-primary" role="alert">
             <p>One customer cannot have two running loans at the same time.</p>
             <p>Clear outstanding repayment of current loan before  applying for another one</p>
@@ -31,7 +31,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="amount">Loan Amount(₦)*:</label>
-                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(₦)" name="amount" value="{{ old('amount') }}" min="1000" max="{{$variable_arr['max_loan_amount']}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
+                    <input type="number" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount(₦)" name="amount" value="{{ old('amount') }}" min="1000" max="{{Session()->get('current_customer')->max_loan_amount}}" step="1000" required autofocus v-model='loanAmount' v-on:change="getLoanFee">
                     @error('amount')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -60,6 +60,7 @@
                     <label for="duration">Duration of Loan*:</label>
                     <select class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration') }}" required v-model = "duration">
                         <option value="30">One Month</option>
+                        <option value="60">Two Months</option>
                         <option value="90">Three Months</option>
                         <option value="120">Four Months</option>
                         <option value="150">Five Months</option>
@@ -141,6 +142,8 @@
     @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
+@endsection
+@section('general-script')
 <script>
 var app = new Vue({
   el: '#app',

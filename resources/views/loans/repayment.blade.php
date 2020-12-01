@@ -13,7 +13,7 @@
             {{Session()->get('current_customer')->surname}}
         </div>
     </div>
-            @if($variable_arr['has_loan'])
+            @if(Session()->get('current_customer')->has_loan)
         <h5 class="card-title text-center">Below are Outstanding Loan Repayments </h5>
        <!--  <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = "/loans/{{Session()->get('current_customer')->id}}/repay">
             {{ csrf_field() }}
@@ -93,7 +93,7 @@
                     <th> Action </th>
                     <th> Status </th>
                 </tr>
-                @foreach($variable_arr['current_due_dates'] as $due_repay)
+                @foreach($variable_arr['due_dates'] as $due_repay)
                     <tr>
                         <td>{{$loop->iteration}}</td>
                         <td>{{$due_repay->amount_repaid}}</td>
@@ -118,9 +118,10 @@
                 @endforeach
             </table>
         </div>
-        {{$variable_arr['current_due_dates']->links()}}
+        {{$variable_arr['due_dates']->links()}}
         <hr>
-        <form method="POST" action="/loans/{{$variable_arr['current_customer_loan']->id}}/repay_all" style="display: inline-block;">
+        @if($variable_arr['unpaid_due_dates'])
+        <form method="POST" action="/loans/{{Session()->get('current_customer')->current_loan->id}}/repay_all" style="display: inline-block;">
             {{csrf_field()}}
             <button class="btn-primary" onclick = 'return confirm("{{ Auth::user()->first_name }}, by proceeding you Confirm that you have received all outstanding loan repayment? Click OK to proceed or CANCEL to return back")'>Repay All Once</button>
         </form>
@@ -166,6 +167,7 @@
                 </div>
             </form>
         </div>
+        @endif
     @else
         <div class="alert alert-primary" role = "alert">Current Customer does not have an active loan to repay.</div>
     @endif
@@ -210,7 +212,7 @@
     There is currently no Loans due for repayment to display.
     @endif
 @endif
-@section('footerLinks')
+@section('general-script')
 <script src="{{asset('/js/customer.js')}}" ></script>
 <script>
     var app = new Vue({

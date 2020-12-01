@@ -11,6 +11,8 @@ use Auth;
 
 class MainController extends Controller
 {
+    public $variable_arr = [];
+    public $customer;
     //set customer session
     public function SetCurrentCustomer($customer_id = false){
         if((isset($_GET['account_number']) && is_numeric($_GET['account_number']) || $customer_id)){
@@ -20,13 +22,15 @@ class MainController extends Controller
                 return false;
             }
             else{//set current customer session
-                $savings = Saving::where('customer_id',$customer->id)->get();
+                $customer_class = new CustomerClass(false,false,0,$customer->id,Auth::id(),false);
+               /*  $savings = Saving::where('customer_id',$customer->id)->get();
                 $balance = Balance::where('customer_id',$customer->id)->first();
                 //return $savings;
                 $customer->savings = $savings;
                 $customer->balance_amount = $balance->amount;
-                $customer->max_loan_amount = $balance->amount * 10;
-                session(['current_customer' => $customer]);
+                $customer->max_loan_amount = $balance->amount * 10; */
+                $this->customer = $customer_class->set_customer($customer->id);
+                session(['current_customer' => $this->customer]);
                 return true;
                 //return url()->current();
                 //return redirect('/savings');
@@ -49,41 +53,41 @@ class MainController extends Controller
             return redirect('/');
         }
         //set if staff is admin
-        $variable_arr['is_admin'] = (Auth::user()->rank >= 2)? True : false;
+        $this->variable_arr['is_admin'] = (Auth::user()->rank >= 2)? True : false;
         //get staffs from db
-        $variable_arr['staffs'] = User::get();
-        if (session()->has('current_customer')) {
+        $this->variable_arr['staffs'] = User::get();
+     /*    if (session()->has('current_customer')) {
             //check if the current customer already has a loan that is still running
-            $variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
-            $variable_arr['current_customer_loan']? $variable_arr['has_loan'] = true : $variable_arr['has_loan'] = false;
+            $this->variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
+            $this->variable_arr['current_customer_loan']? $this->variable_arr['has_loan'] = true : $this->variable_arr['has_loan'] = false;
             //check if customer is in group
-            $variable_arr['in_group'] = Customer::where('id',Session()->get('current_customer')->id)->where('group_id','!=',null)->first();
-            $variable_arr['customer_group'] = $variable_arr['in_group']? Group::where('id',$variable_arr['in_group']->group_id)->first():false;
+            $this->variable_arr['in_group'] = Customer::where('id',Session()->get('current_customer')->id)->where('group_id','!=',null)->first();
+            $this->variable_arr['customer_group'] = $this->variable_arr['in_group']? Group::where('id',$this->variable_arr['in_group']->group_id)->first():false;
             //max loan for customer
-            $variable_arr['max_loan_amount'] = Session()->get('current_customer')->balance_amount * 10;
-            //return $variable_arr['in_group'];
-            if($variable_arr['customer_group']){
+            $this->variable_arr['max_loan_amount'] = Session()->get('current_customer')->balance_amount * 10;
+            //return $this->variable_arr['in_group'];
+            if($this->variable_arr['customer_group']){
                 if(Session()->get('current_customer')->balance_amount >= 3000 && Session()->get('current_customer')->balance_amount < 5000){
-                    $variable_arr['max_loan_amount'] =  50000;
+                    $this->variable_arr['max_loan_amount'] =  50000;
                 }
             }
-        }
+        } */
         //end session
         if(isset($_GET['end_session'])){
             if($this->endCurrentSession()){
                 return redirect(url()->current());
             }
         }
-        $variable_arr['card_header'] = 'Customer\'s Area';
-        $variable_arr['require_session'] = false;
-        $variable_arr['session_isset'] = session()->has('current_customer')? true : false;
+        $this->variable_arr['card_header'] = 'Customer\'s Area';
+        $this->variable_arr['require_session'] = false;
+        $this->variable_arr['session_isset'] = session()->has('current_customer')? true : false;
         $sections = ['customers','savings','loans','admin','transactions'];
         if(in_array($section,$sections)){
-            $variable_arr['nav_link_active'] = false;
+            $this->variable_arr['nav_link_active'] = false;
             switch($section){
                 case 'customers'://HANDLE CUSTOMER SECTION
                     $action = $action? $action : 'view';
-                    $variable_arr['customers_link_active'] = 'active';
+                    $this->variable_arr['customers_link_active'] = 'active';
                     $section_nav = [
                         'Create New Account'          =>  ['link' => '/customers/create','icon' => 'user-plus'],
                         'Update Customer Account'     =>  ['link' => '/customers/edit','icon' => 'user-edit'],
@@ -96,9 +100,9 @@ class MainController extends Controller
                         break;
                         case 'edit':
                             $section_nav['Update Customer Account']['nav_link_active'] = true;
-                            $variable_arr['require_session'] = true;
-                            if(!$variable_arr['session_isset']){
-                                if($this->SetCurrentCustomer()){
+                            $this->variable_arr['require_session'] = true;
+                            if(!$this->variable_arr['session_isset']){
+                                if($this->SetCurrentCustomer()){//it gets the id from url variable
                                     return redirect(url()->current());
                                 }
                             }
@@ -107,22 +111,22 @@ class MainController extends Controller
                             $section_nav['View Customers Accounts']['nav_link_active'] = true;
                             if(is_numeric($id)){
                                 //return $id;
-                                $variable_arr['new_customer'] = false;
+                                $this->variable_arr['new_customer'] = false;
                                 if(isset($_GET['new'])){
-                                    $variable_arr['new_customer'] = true;
+                                    $this->variable_arr['new_customer'] = true;
                                 }
-                                $variable_arr['customer'] = Customer::findOrFail($id);
+                                $this->variable_arr['customer'] = Customer::findOrFail($id);
                                 $balance = Balance::where('customer_id',$id)->first();
-                                $variable_arr['customer']->balance = $balance->amount??0;
-                                $variable_arr['customer']->group = ($variable_arr['customer']->group_id != null)? false : Group::get();
-                                $variable_arr['customer']->guarantor = Guarantor::where('customer_id',$id)->first();
+                                $this->variable_arr['customer']->balance = $balance->amount??0;
+                                $this->variable_arr['customer']->group = ($this->variable_arr['customer']->group_id != null)? false : Group::get();
+                                $this->variable_arr['customer']->guarantor = Guarantor::where('customer_id',$id)->first();
                                 //set current customer session
                                 $this->SetCurrentCustomer($id);
                             }
                             else{
-                                //$variable_arr['customers'] = Customer::where('id','!=',1)->get();//exclude gday account
-                                $variable_arr['customers'] = Customer::where('id','!=',1)->orderBy('created_at','DESC')->paginate(10);
-                                foreach($variable_arr['customers'] as $customer){
+                                //$this->variable_arr['customers'] = Customer::where('id','!=',1)->get();//exclude gday account
+                                $this->variable_arr['customers'] = Customer::where('id','!=',1)->orderBy('created_at','DESC')->paginate(10);
+                                foreach($this->variable_arr['customers'] as $customer){
                                     $balance = Balance::where('customer_id',$customer->id)->first();
                                     if($balance){
                                         $customer->balance = $balance->amount;
@@ -135,15 +139,15 @@ class MainController extends Controller
                         break;
                         case 'groups':
                             $section_nav['Customers Groups']['nav_link_active'] = true;
-                            $variable_arr['staffs'] = User::where('rank','>',0)->get();
-                            $variable_arr['groups'] = Group::get();
+                            $this->variable_arr['staffs'] = User::where('rank','>',0)->get();
+                            $this->variable_arr['groups'] = Group::get();
                             if(is_numeric($id)){
-                                $variable_arr['group'] = Group::findOrFail($id);
-                                foreach($variable_arr['group']->customer as $customer){
-                                    if($variable_arr['group']->leader_id == $customer->id){
+                                $this->variable_arr['group'] = Group::findOrFail($id);
+                                foreach($this->variable_arr['group']->customer as $customer){
+                                    if($this->variable_arr['group']->leader_id == $customer->id){
                                         $customer->position = 'Leader';
                                     }
-                                    elseif($variable_arr['group']->secretary_id == $customer->id){
+                                    elseif($this->variable_arr['group']->secretary_id == $customer->id){
                                         $customer->position = 'Secretary';
                                     }
                                     else{
@@ -158,19 +162,19 @@ class MainController extends Controller
                     //return $section_nav;
                 break;
                 case 'savings'://HANDLE SAVING SECTION
-                    $variable_arr['require_session'] = true;
-                    $variable_arr['savings_link_active'] = 'active';
-                    //$variable_arr['unit_amount'] = $variable_arr['unit_amount']->unit_amount;
-                    //return $variable_arr['unit_amount'];
-                    if(!$variable_arr['session_isset']){
+                    $this->variable_arr['require_session'] = true;
+                    $this->variable_arr['savings_link_active'] = 'active';
+                    //$this->variable_arr['unit_amount'] = $this->variable_arr['unit_amount']->unit_amount;
+                    //return $this->variable_arr['unit_amount'];
+                    if(!$this->variable_arr['session_isset']){
                         //return $this->SetCurrentCustomer();
                         if($this->SetCurrentCustomer()){
                             return redirect(url()->current());
                         }
                     }
-                    if ($variable_arr['session_isset']) {
-                        $variable_arr['saving'] = Saving::where('cycle_complete',false)->where('customer_id',Session()->get('current_customer')->id)->first();
-                        $variable_arr['saving_cycle'] = Saving::where('customer_id',Session()->get('current_customer')->id)->count() + 1;
+                    if ($this->variable_arr['session_isset']) {
+                        $this->variable_arr['saving'] = Saving::where('cycle_complete',false)->where('customer_id',Session()->get('current_customer')->id)->first();
+                        $this->variable_arr['saving_cycle'] = Saving::where('customer_id',Session()->get('current_customer')->id)->count() + 1;
                     }
                     $section_nav = [
                         'Start New Saving'          =>  ['link' => '/savings/create','icon' => 'plus'],
@@ -190,8 +194,8 @@ class MainController extends Controller
                             $section_nav['Close Saving']['nav_link_active'] = true;
                         break;
                         case 'disburse':
-                            $unit_amount = $variable_arr['saving']? $variable_arr['saving']->unit_amount : 0;
-                            $variable_arr['withdrawable_amount'] = Session()->get('current_customer')->balance_amount - $unit_amount;
+                            $unit_amount = $this->variable_arr['saving']? $this->variable_arr['saving']->unit_amount : 0;
+                            $this->variable_arr['withdrawable_amount'] = Session()->get('current_customer')->balance_amount - $unit_amount;
                             $section_nav['Withdraw From Saving']['nav_link_active'] = true;
                         break;
                         default:
@@ -199,13 +203,13 @@ class MainController extends Controller
                     }
                 break;
                 case 'loans'://HANDLE LOAN SECTION
-                    if(!$variable_arr['session_isset']){
+                    if(!$this->variable_arr['session_isset']){
                         if($this->SetCurrentCustomer()){
                             return redirect(url()->current());
                         }
                     }
                     $action = $action? $action : 'repayment';
-                    $variable_arr['loans_link_active'] = 'active';
+                    $this->variable_arr['loans_link_active'] = 'active';
                     $section_nav = [
                         'New Loan Application'  =>  ['link' => '/loans/create','icon' => 'plus'],
                         'Pending Loans'         =>  ['link' => '/loans/pending','icon' => 'circle'],
@@ -216,12 +220,12 @@ class MainController extends Controller
                     switch($action){
                         case 'create':
                             $section_nav['New Loan Application']['nav_link_active'] = true;
-                            $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                            $this->variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
                         break;
                         case 'pending':
                             $section_nav['Pending Loans']['nav_link_active'] = true;
-                            $variable_arr['pending_loans'] = Loan::where('approval_date',null)->paginate(7);
-                            $variable_arr['heading'] = "List of Loans Awaiting Approval $ Disbursement";
+                            $this->variable_arr['pending_loans'] = Loan::where('approval_date',null)->paginate(7);
+                            $this->variable_arr['heading'] = "List of Loans Awaiting Approval $ Disbursement";
                             if(isset($_GET['approve_loan']) && is_numeric($_GET['approve_loan'])){
                                 $customer_class = new CustomerClass('loans','approve',0,$_GET['approve_loan'],Auth::id(),false);
                                 if($customer_class->approve_loan()){
@@ -236,37 +240,43 @@ class MainController extends Controller
                         break;
                         case 'approved':
                             $section_nav['Approved Loans']['nav_link_active'] = true;
-                            $variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
-                            $variable_arr['heading'] = "List of Approved Loans";
+                            $this->variable_arr['pending_loans'] = Loan::where('approval_date','!=',null)->paginate(7);
+                            $this->variable_arr['heading'] = "List of Approved Loans";
                         break;
                         case 'repayment':
                             $section_nav['Loan Repayment']['nav_link_active'] = true;
-                            $variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
+                            $this->variable_arr['repay_loans'] = Loan::where('loan_cleared',false)->where('approval_date','!=',null)->paginate(7);
                             //get the repayment count for each of the approved loans.
-                            foreach($variable_arr['repay_loans'] as $loan){
+                            foreach($this->variable_arr['repay_loans'] as $loan){
                                 $repay_count = Loan_repayment::where('loan_id',$loan->id)->get();
                                 $loan->repay_count = count($repay_count);
                             }
-                            if (isset($variable_arr['has_loan']) && $variable_arr['has_loan']){
-                                $variable_arr['current_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                            if (isset(Session()->get('current_customer')->has_loan)){
+                                if(Session()->get('current_customer')->has_loan){
+                                    $this->variable_arr['due_dates'] = Loan_repayment::where('loan_id',Session()->get('current_customer')->current_loan->id)->paginate(10);
+                                }
                                 //get the specific repayment with specified id
                                 if($id){
-                                    $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                    $this->variable_arr['due_dates'] = Loan_repayment::where('id',$id)->paginate(10);
+                                    if($this->variable_arr['due_dates'][0]->loan->customer_id != Session()->get('current_customer')->id){
+                                        $this->SetCurrentCustomer($this->variable_arr['due_dates'][0]->loan->customer_id);
+                                    }
+                                    //return $this->variable_arr['due_dates'][0]->loan->customer_id;
                                 }
-                                $variable_arr['unpaid_due_dates'] = Loan_repayment::where('loan_id',$variable_arr['current_customer_loan']->id)->where('repaid',false)->first();
-                                /* if($variable_arr['unpaid_due_dates']){
-                                    $first_due_date = Carbon::createFromDate($variable_arr['unpaid_due_dates']->due_date);
+                                $this->variable_arr['unpaid_due_dates'] = Loan_repayment::where('loan_id',Session()->get('current_customer')->current_loan->id)->where('repaid',false)->first();
+                                /* if($this->variable_arr['unpaid_due_dates']){
+                                    $first_due_date = Carbon::createFromDate($this->variable_arr['unpaid_due_dates']->due_date);
                                     $today = Carbon::now();
                                     $defaulted_days = $today->diffInDays($first_due_date);
                                     if($defaulted_days > 0){
-                                        $variable_arr['unpaid_due_dates']->defaulted = true;
+                                        $this->variable_arr['unpaid_due_dates']->defaulted = true;
                                         if($defaulted_days > 7){
-                                            $loan = Loan::where('id',$variable_arr['unpaid_due_dates']->loan_id)->first();
+                                            $loan = Loan::where('id',$this->variable_arr['unpaid_due_dates']->loan_id)->first();
                                             //return $loan;
                                             if(!is_null($loan->last_default_check)){//has defaulted before
                                                 $last_check = Carbon::createFromDate($loan->last_default_check);
                                                 if($today->diffInDays($last_check) >= 1){
-                                                    $variable_arr['unpaid_due_dates']->amount_repaid += (2/100) * $loan->amount * ($today->diffInDays($last_check));
+                                                    $this->variable_arr['unpaid_due_dates']->amount_repaid += (2/100) * $loan->amount * ($today->diffInDays($last_check));
                                                     $loan->outstanding_amount += (2/100) * $loan->amount * ($today->diffInDays($last_check));
                                                     return "Grace period expired";
                                                 }
@@ -274,13 +284,13 @@ class MainController extends Controller
                                             }
                                             else{//first time of recording default penalty
                                                 //return "Check is null";
-                                                $variable_arr['unpaid_due_dates']->amount_repaid += ((2/100) * $loan->amount) * ($defaulted_days - 7);
+                                                $this->variable_arr['unpaid_due_dates']->amount_repaid += ((2/100) * $loan->amount) * ($defaulted_days - 7);
                                                 $loan->outstanding_amount += ((2/100) * $loan->amount) * ($defaulted_days - 7);
                                                 $loan->last_default_check = Carbon::now();
                                                 $loan->save();
-                                                $variable_arr['unpaid_due_dates']->save();
+                                                $this->variable_arr['unpaid_due_dates']->save();
                                             }
-                                            return "Repay amount " . $loan->outstanding_amount." : Repay Unit: ".$variable_arr['unpaid_due_dates']->amount_repaid;
+                                            return "Repay amount " . $loan->outstanding_amount." : Repay Unit: ".$this->variable_arr['unpaid_due_dates']->amount_repaid;
                                         }
                                         return "This payment defaulted with $defaulted_days days";
                                     }
@@ -291,49 +301,49 @@ class MainController extends Controller
                                 $repayment = Loan_repayment::findOrFail($id);
                                 //set the current user
                                 $this->SetCurrentCustomer($repayment->loan->customer_id);
-                                
+
                                 $current_url = url()->current();//get current url
                                 if(!isset($_GET['rw'])){
                                     return redirect($current_url.'?rw=true');
                                 }
                                 return $current_url;
                                 //get the specific repayment with specified id
-                                $variable_arr['current_due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',$variable_arr['current_customer_loan']->id)->paginate(10);
+                                $this->variable_arr['due_dates'] = Loan_repayment::where('id',$id)->where('loan_id',Session()->get('current_customer')->current_loan->id)->paginate(10);
                                 }
                             }
                         break;
                         case 'due_today':
-                            $variable_arr['due_date'] = Carbon::today();
+                            $this->variable_arr['due_date'] = Carbon::today();
                             if(isset($_GET['due_date'])){
                                 //return "Date set!<br> ".$_GET['due_date'];
-                                $variable_arr['due_date'] = Carbon::createFromDate($_GET['due_date']);
+                                $this->variable_arr['due_date'] = Carbon::createFromDate($_GET['due_date']);
                             }
-                            $variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $variable_arr['due_date'])->where('repaid',false)->paginate(10);
+                            $this->variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $this->variable_arr['due_date'])->where('repaid',false)->paginate(10);
                             if(isset($_GET['due_day'])){
                                 $due_day = $_GET['due_day'];
                                 if($due_day == 'yesterday'){
-                                    $variable_arr['due_date'] = $variable_arr['due_date']->subDay();
-                                    $variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $variable_arr['due_date'])->where('repaid',false)->paginate(10);
-                                    //return "You are viewing loans due yesterday " .date('D d/M/Y',strtotime($variable_arr['due_date']));
+                                    $this->variable_arr['due_date'] = $this->variable_arr['due_date']->subDay();
+                                    $this->variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $this->variable_arr['due_date'])->where('repaid',false)->paginate(10);
+                                    //return "You are viewing loans due yesterday " .date('D d/M/Y',strtotime($this->variable_arr['due_date']));
                                 }
                                 if($due_day == 'tomorrow'){
-                                    $variable_arr['due_date'] = $variable_arr['due_date']->addDay();
-                                    $variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $variable_arr['due_date'])->where('repaid',false)->paginate(10);
+                                    $this->variable_arr['due_date'] = $this->variable_arr['due_date']->addDay();
+                                    $this->variable_arr['loans_due_today'] = Loan_repayment::whereDate('due_date', '=', $this->variable_arr['due_date'])->where('repaid',false)->paginate(10);
                                     //return "You are viewing loans due tomorrow";
                                 }
                             }
-                            //return $variable_arr['loans_due_today'][0]->loan;
+                            //return $this->variable_arr['loans_due_today'][0]->loan;
                         break;
                     }
                     //return $section_nav;
                 break;
                 case 'transactions'://HANDLE TRANSACTION SECTION
-                    $variable_arr['transactions_link_active'] = 'active';
+                    $this->variable_arr['transactions_link_active'] = 'active';
                     $staff_set = false;
                     if($id){
                         $staff_set = $id;
                     }
-                    if($variable_arr['is_admin']){
+                    if($this->variable_arr['is_admin']){
                         $transaction_class = $staff_set? new TransactionClass(10,$staff_set) : new TransactionClass(10);
                     }
                     else{
@@ -348,23 +358,23 @@ class MainController extends Controller
                         case 'today':
                             $section_nav['Today\'s Transactions']['nav_link_active'] = true;
                             //return 1;
-                            $variable_arr['transactions'] = $transaction_class->get_today();
-                            $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "Today's Transactions";
+                            $this->variable_arr['transactions'] = $transaction_class->get_today();
+                            $this->variable_arr['transactions_total'] = $transaction_class->get_total();
+                            $this->variable_arr['heading'] = "Today's Transactions";
                             break;
 
                         case 'week':
                             $section_nav['This Week\'s Transactions']['nav_link_active'] = true;
-                            $variable_arr['transactions'] = $transaction_class->get_week();
-                            $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "This Week's Transactions";
+                            $this->variable_arr['transactions'] = $transaction_class->get_week();
+                            $this->variable_arr['transactions_total'] = $transaction_class->get_total();
+                            $this->variable_arr['heading'] = "This Week's Transactions";
                             break;
 
                         case 'month':
                             $section_nav['This Month\'s Transactions']['nav_link_active'] = true;
-                            $variable_arr['transactions'] = $transaction_class->get_month();
-                            $variable_arr['transactions_total'] = $transaction_class->get_total();
-                            $variable_arr['heading'] = "This Month's Transactions";
+                            $this->variable_arr['transactions'] = $transaction_class->get_month();
+                            $this->variable_arr['transactions_total'] = $transaction_class->get_total();
+                            $this->variable_arr['heading'] = "This Month's Transactions";
                             break;
 
                         default:
@@ -374,7 +384,7 @@ class MainController extends Controller
                 break;
                 case 'admin'://HANDLE STAFF SECTION
                     //keep unauthorized staffs away
-                    if(!$variable_arr['is_admin']){
+                    if(!$this->variable_arr['is_admin']){
                         return redirect('/customers');
                     }
                     $action = $action? $action : 'add_staff';
@@ -389,7 +399,7 @@ class MainController extends Controller
                         break;
                         case 'manage_staffs':
                             $section_nav['Manage Staff']['nav_link_active'] = true;
-                            $variable_arr['staffs'] = User::where('rank','!=',0)->where('id','!=',Auth::id())->get();
+                            $this->variable_arr['staffs'] = User::where('rank','!=',0)->where('id','!=',Auth::id())->get();
                         break;
                     }
             }//end switch section
@@ -397,6 +407,7 @@ class MainController extends Controller
         else{//this sectional nav will be displayed when no section is specified
             return redirect('customers/view');
         }
+        $variable_arr = $this->variable_arr;
         return view("home",compact('section_nav','section','action','variable_arr'));
     }//end index function
 }

@@ -17,7 +17,7 @@
     @foreach($variable_arr['customers'] as $customer)
     <tr id="{{$customer->id}}" class="t-row">
         <td>{{$loop->iteration}}</td>
-        <td>{{$customer->full_name}}</td>
+        <td><a href="/customers/view/{{$customer->id}}">{{$customer->full_name}}</a></td>
         <td>{{$customer->account_number}}</td>
         <td>{{$customer->phone_number}}</td>
         <td>{{$customer->email}}</td>
@@ -164,6 +164,7 @@
 @endisset
 
 @section('footerLinks')
+
 <script>
     $('.t-row').click(function(){
         //alert('Clicked a t-row');

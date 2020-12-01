@@ -293,6 +293,8 @@
     </form>
     @section('footerLinks')
     <script src="{{asset('/js/customer.js')}}" defer></script>
+    @endsection
+    @section('general-script')
     <script>
         var app = new Vue({
         el: '#app',

@@ -87,6 +87,8 @@
     @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
+@endsection
+@section('general-script')
 <script src="{{asset('/js/customer.js')}}" defer></script>
 <script>
 var app = new Vue({

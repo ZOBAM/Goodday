@@ -55,7 +55,7 @@
                                         <a class="nav-link" href="{{ route('register') }}"><i class = "fas fa-user-plus"></i> {{ __('Register') }}</a>
                                     </li>
                                 @endif -->
-                            @else                             
+                            @else
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle {{ $variable_arr['customers_link_active']?? '' }}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                         <i class="fas fa-address-book"></i> Customers <span class="caret"></span>
@@ -188,5 +188,42 @@
         </footer>
     </div>
     @yield('footerLinks')
+    @section('general-script')
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+            now: new Date()
+        },
+        methods:{
+            sendSMS: function(){
+                var today = this.now.getDay();
+                let lastSentDay = localStorage.getItem('sentDay');
+                if(lastSentDay*1 === today*1){
+                    console.log('Already sent SMS for the day: ' + lastSentDay);
+                }
+                else{
+                    //alert('Has not sent SMS for today: ' + today);
+                    var _this = this;
+                    axios.get('/sms-notification')
+                    .then(function (response) {
+                        localStorage.setItem('sentDay',today);
+                        console.log(today);
+                        console.log(lastSentDay);
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            }
+        },
+        mounted () {
+            this.sendSMS();
+            setInterval(this.sendSMS,30*60*1000);
+        }
+        })
+    </script>
+    @show
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 namespace App\Classes;
 use Carbon\Carbon;
-use App\{User,Customer,Balance,Transaction, Loan, Group};
+use App\{User, Customer, Balance, Transaction, Loan, Loan_repayment, Group, Saving, Savings_collection, Guarantor};
 use Auth;
 
 class CustomerClass {
@@ -37,6 +37,35 @@ class CustomerClass {
     }
     public function set_customer($customer_id){
         $this->customer = Customer::where('id',$customer_id)->first();
+        if($this->customer){
+            $this->customer->savings = Saving::where('customer_id',$this->customer->id)->get();
+            $balance = Balance::where('customer_id',$this->customer->id)->first();
+            if($balance){
+                $this->customer->balance_amount = $balance->amount; //get customer balance
+            }
+            //check if the current customer already has a loan that is still running
+            $this->customer->current_loan = Loan::where('customer_id',$this->customer->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
+            $this->customer->current_loan? $this->customer->has_loan = true : $this->customer->has_loan = false;
+            //check if customer is in group
+            $this->customer->in_group = $this->customer->group_id;
+            if($this->customer->in_group){
+                $this->customer->group = Group::where('id',$this->customer->in_group)->first();
+            }
+            return $this->customer;
+        }
+        else{
+            return false; //meaning that no such customer was found in the database.
+        }
+    }
+    public function get_max_loan(){
+        //max loan for customer
+        $this->customer->max_loan_amount = $this->customer->balance_amount * 10;
+        if($this->customer->in_group){
+            if($this->customer->balance_amount >= 3000 && $this->customer->balance_amount< 5000){
+                $this->customer->max_loan_amount =  50000;
+            }
+        }
+        return $this->customer->max_loan_amount;
     }
     public function get_interest_rate(){
         return $this->interest_rate;
@@ -106,6 +135,8 @@ class CustomerClass {
             $this->customer->loan->approval_date = Carbon::now();
             $this->customer->loan->approved_by = $this->staff->id;
             $this->customer->loan->save();
+            Session()->get('current_customer')->has_loan = true;
+            Session()->get('current_customer')->current_loan = $this->customer->loan;
             return true;
         }
     }

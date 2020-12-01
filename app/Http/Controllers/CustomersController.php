@@ -14,7 +14,7 @@ class CustomersController extends Controller
             $t_arr = [];
             $customer = Customer::findOrFail($customer_id);
             $customer_balance = Balance::where('customer_id',$customer_id)->first();
-            if($customer_balance->amount >= 50){
+            if($customer_balance && $customer_balance->amount >= 50){
                 session()->flash('info','<span style="color: red;font-weight:bolder">You cannot delete a customer\'s account while he/she still has balance in account</span>.<hr> Withdraw/Clear the balance and then delete the account.');
                 return back();
             }
@@ -45,7 +45,7 @@ class CustomersController extends Controller
                 session()->flash('info',$message.'<hr>Customer Account successfully deleted.');
                 return redirect('/customers');
             }
-        }
+        }//end if delete
         $this->validate($request, [
             'first_name'        => 'required|string|min:3|max:35',
             'surname'           => 'required|string|min:3|max:35',

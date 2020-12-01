@@ -55,6 +55,7 @@ class LoansController extends Controller
             $customer_class->save_transaction();
             $customer_class->update_account();
             session()->flash('info','All outstanding loan repayment cleared!.');
+            Session()->get('current_customer')->has_loan = false;
             return back();
             //return "All outstanding loan repayment cleared!";
         }
