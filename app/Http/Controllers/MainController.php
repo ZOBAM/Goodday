@@ -29,7 +29,7 @@ class MainController extends Controller
                 $customer->savings = $savings;
                 $customer->balance_amount = $balance->amount;
                 $customer->max_loan_amount = $balance->amount * 10; */
-                $this->customer = $customer_class->set_customer($customer->id);
+                $this->customer = $customer_class->customer;
                 session(['current_customer' => $this->customer]);
                 return true;
                 //return url()->current();

@@ -13,7 +13,6 @@ class SavingsController extends Controller
     public function record_transaction($type,$subtype,$amount,$customer_id,$staff_id,$update_account=false){
         $customer_class = new CustomerClass($type,$subtype,$amount,$customer_id,$staff_id,$update_account);
         $customer_class->save_transaction();
-        return $customer_class->max_loan_amount;
         return true;
     }
     public function StoreSavings(Request $request, $customer_id = false, $action = false){
@@ -142,11 +141,10 @@ class SavingsController extends Controller
                     $balance = Balance::where('customer_id',$customer_id)->first();
                     $balance->amount += $saving->unit_amount;
                     $balance->save();
-                    $max_loan_amount=$this->record_transaction('savings','just_save',$request->amount_saved,$customer_id,$saving->created_by);
+                    $this->record_transaction('savings','just_save',$request->amount_saved,$customer_id,$saving->created_by);
                     session()->flash('info',"The sum of ₦$request->amount_saved was added to the customer's account");
                     Session()->get('current_customer')->balance_amount += $saving->unit_amount;
                     Session()->get('current_customer')->savings = Saving::where('customer_id',$customer_id)->get();
-                    return $max_loan_amount;
                     return back();
                 }
             }
