@@ -251,7 +251,7 @@ class MainController extends Controller
                                 $repay_count = Loan_repayment::where('loan_id',$loan->id)->get();
                                 $loan->repay_count = count($repay_count);
                             }
-                            if (isset(Session()->get('current_customer')->has_loan)){
+                            if (Session()->get('current_customer')->has_loan){
                                 if(Session()->get('current_customer')->has_loan){
                                     $this->variable_arr['due_dates'] = Loan_repayment::where('loan_id',Session()->get('current_customer')->current_loan->id)->paginate(10);
                                 }

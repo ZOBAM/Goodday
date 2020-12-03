@@ -15,6 +15,10 @@ class LoansController extends Controller
     }
     public function StoreLoans(Request $request, $customer_id = false,$action = false){
         //LOAN REPAYMENT
+        /* $customer_class = new CustomerClass('loans','repay',2000,Session()->get('current_customer')->id,Auth::id(),false);
+        $customer_class->set_customer(Session()->get('current_customer')->id);
+        return $customer_class->get_max_loan(); */
+
         if ($action == 'repay') {
             $loan_repayment = Loan_repayment::where('id', $customer_id)->first();
             $loan_repayment->repaid = true;

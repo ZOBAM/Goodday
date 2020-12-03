@@ -5,7 +5,8 @@ use App\{User, Customer, Balance, Transaction, Loan, Loan_repayment, Group, Savi
 use Auth;
 
 class CustomerClass {
-    private $max_loan_amount = 200000;// two hundred thousand naira
+    private $max_loan_amount_all = 200000;// two hundred thousand naira
+    public  $max_loan_amount = 200000;// two hundred thousand naira
     private $min_loan_amount = 1000;// one thousand naira
     private $interest_rate = 20/100;// interest rate of 20%
     private $account_no;
@@ -43,9 +44,17 @@ class CustomerClass {
             if($balance){
                 $this->customer->balance_amount = $balance->amount; //get customer balance
             }
+            $this->customer->max_loan_amount = $this->get_max_loan();
             //check if the current customer already has a loan that is still running
             $this->customer->current_loan = Loan::where('customer_id',$this->customer->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
             $this->customer->current_loan? $this->customer->has_loan = true : $this->customer->has_loan = false;
+            //max loan for customer
+            $this->customer->max_loan_amount = $this->customer->balance_amount * 10;
+            if($this->customer->in_group){
+                if($this->customer->balance_amount >= 3000 && $this->customer->balance_amount< 5000){
+                    $this->customer->max_loan_amount =  50000;
+                }
+            }
             //check if customer is in group
             $this->customer->in_group = $this->customer->group_id;
             if($this->customer->in_group){
@@ -99,6 +108,7 @@ class CustomerClass {
                     $this->comment = $this->customer->full_name. " closed saving of ₦".abs($this->amount)." via ".$this->staff->full_name;
                 }
                 elseif($this->subtype == 'just_save'){
+                    Session()->get('current_customer')->max_loan_amount = $this->get_max_loan();
                     $this->comment = $this->customer->full_name. " saved the sum of ₦".abs($this->amount)." via ".$this->staff->full_name;
                 }
                 break;
