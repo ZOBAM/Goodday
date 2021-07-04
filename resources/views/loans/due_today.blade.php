@@ -28,6 +28,9 @@
     </table>
 {{ $variable_arr['loans_due_today']->links() }}
 </div>
+@else
+There is currently no Loan that is due for repayment today.
+@endif
 <div class="row">
     <a href="/loans/due_today?due_day=yesterday&due_date={{$variable_arr['due_date']}}" class="col text-center">
         <button class="btn btn-primary">
@@ -40,9 +43,6 @@
         </button>
     </a>    
 </div>
-@else
-There is currently no Loan that is due for repayment today.
-@endif
 @section('footerLinks')
 <script>
 

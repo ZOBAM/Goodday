@@ -70,6 +70,9 @@
                                         <a class="dropdown-item" href="/customers/view">
                                             <i class="fas fa-eye"></i> View Customers Accounts
                                         </a>
+                                        <a class="dropdown-item" href="/customers/statement">
+                                            <i class="fas fa-eye"></i> Accounts Statement
+                                        </a>
                                         <a class="dropdown-item" href="/customers/groups">
                                             <i class="fas fa-layer-group"></i> Customers Groups
                                         </a>

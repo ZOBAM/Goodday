@@ -130,7 +130,7 @@ class LoansController extends Controller
         //NEW LOAN APPLICATION
         else{
             $this->validate($request, [
-                'amount'            => 'required|numeric|min:1000|max:200000',
+                'amount'            => 'required|numeric|min:1000|max:1000000',
                 'loan_type'         => 'required|string|min:4|max:15',
                 'duration'          => 'required|numeric|min:7|max:180',
                 'repay_interval'    => 'required|string|min:4|max:10',

@@ -92,6 +92,7 @@ class MainController extends Controller
                         'Create New Account'          =>  ['link' => '/customers/create','icon' => 'user-plus'],
                         'Update Customer Account'     =>  ['link' => '/customers/edit','icon' => 'user-edit'],
                         'View Customers Accounts'    =>  ['link' => '/customers/view','icon' => 'eye'],
+                        'Account Statement'    =>  ['link' => '/customers/statement','icon' => 'book'],
                         'Customers Groups'            =>  ['link' => '/customers/groups','icon' => 'layer-group'],
                     ];
                     switch($action){
@@ -137,6 +138,26 @@ class MainController extends Controller
                                 }
                             }
                         break;
+                        case 'statement':
+                            $section_nav['Account Statement']['nav_link_active'] = true;
+                            $this->variable_arr['require_session'] = true;
+                            if($this->variable_arr['session_isset']){
+                                $customer_class = new CustomerClass(false,false,0,Session()->get('current_customer')->id,Auth::id(),false);
+                                //if date interval was supplied use it if not user past month.
+                                if(isset($_GET['start_date']) && $_GET['end_date']){
+                                    $start_date = $_GET['start_date'];
+                                    $end_date = $_GET['end_date'];
+                                    $this->variable_arr['statement'] = $customer_class->account_statement($start_date,$end_date);
+                                }else{
+                                    $this->variable_arr['statement'] = $customer_class->account_statement();
+                                }
+                            }else{
+                                if($this->SetCurrentCustomer()){//it gets the id from url variable
+                                    return redirect(url()->current());
+                                }
+                            }
+                            //return $this->variable_arr['statement'];
+                            break;
                         case 'groups':
                             $section_nav['Customers Groups']['nav_link_active'] = true;
                             $this->variable_arr['staffs'] = User::where('rank','>',0)->get();
@@ -251,7 +272,7 @@ class MainController extends Controller
                                 $repay_count = Loan_repayment::where('loan_id',$loan->id)->get();
                                 $loan->repay_count = count($repay_count);
                             }
-                            if (Session()->get('current_customer')->has_loan){
+                            if (isset(Session()->get('current_customer')->has_loan)){
                                 if(Session()->get('current_customer')->has_loan){
                                     $this->variable_arr['due_dates'] = Loan_repayment::where('loan_id',Session()->get('current_customer')->current_loan->id)->paginate(10);
                                 }

@@ -1,12 +1,12 @@
 <?php
 namespace App\Classes;
 use Carbon\Carbon;
-use App\{User, Customer, Balance, Transaction, Loan, Loan_repayment, Group, Saving, Savings_collection, Guarantor};
+use App\{User, Customer, Balance, Transaction, Loan, Loan_repayment, Group, Saving, Savings_collection, Guarantor, Withdrawal};
 use Auth;
 
 class CustomerClass {
-    private $max_loan_amount_all = 200000;// two hundred thousand naira
-    private  $max_loan_amount = 200000;// two hundred thousand naira
+    private $max_loan_amount_all = 1000000;// two hundred thousand naira
+    private  $max_loan_amount = 1000000;// two hundred thousand naira
     private $min_loan_amount = 1000;// one thousand naira
     private $interest_rate = 20/100;// interest rate of 20%
     private $account_no;
@@ -64,7 +64,9 @@ class CustomerClass {
                 $max_loan_amount =  50000;
             }
         }
-        Session()->get('current_customer')->max_loan_amount = $max_loan_amount;
+        if(session()->has('current_customer')){
+            Session()->get('current_customer')->max_loan_amount = $max_loan_amount;
+        }
         return $max_loan_amount;
     }
     public function get_interest_rate(){
@@ -173,6 +175,44 @@ class CustomerClass {
             $group->save();
             return "$customer->full_name has been removed from the Group \"$group->name\" Successfully";
         }
+    }
+    public function account_statement($start_date = false, $end_date = false){
+        $search_term = 'SVS'.$this->customer->id.'-';
+        if($start_date){
+            $start_date = Carbon::createFromDate($start_date);
+            $end_date = Carbon::createFromDate($end_date);
+        }else{
+            $end_date = Carbon::now();
+            $start_date = Carbon::now()->subMonth(1);
+        }
+        $transactions = Transaction::where('ref_id', 'LIKE', "%$search_term%")
+                        ->whereDate('created_at','>=', $start_date)
+                        ->whereDate('created_at', '<=', $end_date)
+                        ->get();
+        $transactions_total = $transactions->sum('amount');
+        $total_to_end_date = $transactions->sum('amount') + Transaction::where('ref_id', 'LIKE', "%$search_term%")->whereDate('created_at', '<', $start_date)->sum('amount');
+        $withdrawal_total = $deposit_total = 0;
+        $current_balance = $this->customer->balance_amount - $transactions_total - Transaction::where('ref_id', 'LIKE', "%$search_term%")->whereDate('created_at', '>', $end_date)->sum('amount');
+        //return $transactions_total;
+        foreach($transactions as $transaction){
+            if($transaction->amount > 0){
+                $deposit_total += $transaction->amount;
+                $transaction->current_balance = $current_balance + $transaction->amount;
+                $current_balance = $transaction->current_balance;
+            }else{
+                $withdrawal_total += abs($transaction->amount);
+                $transaction->current_balance = $current_balance + $transaction->amount;
+                $current_balance = $transaction->current_balance;
+            }
+        }
+        return [
+            'transactions' => $transactions, 
+            'deposit_total' => $deposit_total, 
+            'withdrawal_total' => $withdrawal_total,
+            'transactions_total' => $total_to_end_date,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ];
     }
 }
 ?>

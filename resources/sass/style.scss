@@ -1,118 +1,138 @@
-$whatsapp_bg:#008B8B;
-body{
-    background-image: url('/images/gdbody_bg.png');
+$whatsapp_bg: #008b8b;
+body {
+    background-image: url("/images/gdbody_bg.png");
     background-size: cover;
 }
-header{
-    min-height: 140px; background-color: grey;position: relative;
+header {
+    min-height: 140px;
+    background-color: grey;
+    position: relative;
     //background-image: url('/images/gdheader.png');
     background-size: cover;
 }
-nav{
-    img{max-width: 7em;}
-    .container{
-        .active{
-            border: 2px groove #6C8D9E; background-color: #f3f5f6; margin-bottom: -9px;
+nav {
+    img {
+        max-width: 7em;
+    }
+    .container {
+        .active {
+            border: 2px groove #6c8d9e;
+            background-color: #f3f5f6;
+            margin-bottom: -9px;
             border-bottom: 0px;
-            border-top-left-radius: 1vh; border-top-right-radius: 2vh;
-            a{
-                color: #fff; font-weight: bolder;
+            border-top-left-radius: 1vh;
+            border-top-right-radius: 2vh;
+            a {
+                color: #fff;
+                font-weight: bolder;
             }
         }
     }
 }
-nav.navbar{
+nav.navbar {
     width: 100%;
     //position: absolute;bottom: 0px;
 }
-#left-nav{
+#left-nav {
     //border: 1px solid red;
     color: rgb(95, 7, 7);
-    background-image: url('/images/gdleft_nav_bg.png');
+    background-image: url("/images/gdleft_nav_bg.png");
     background-size: cover;
     border-bottom-right-radius: 6vh;
-    a:link{
-        border-bottom: 11px solid rgb(39, 58, 39);
+    a {
+        border: 2px solid rgb(188, 189, 188);
     }
-    a:hover{
-        background-color: blue($color: #000000);
+    a:link {
+        border-radius: 15%;
+        margin: 5px 0px;
     }
-    a:first-child{
+    a:hover:not(.active) {
+        background-color: #58869c;
+        color: white;
+    }
+    a:first-child {
         margin-top: 1em;
     }
-    .active{
-            border: 2px solid #638193;
-        }
+    .active {
+        border: 2px solid #638193;
+        background-color: #7091a1;
+        color: white;
+        font-weight: bolder;
+    }
 }
-#customer-details{
+#customer-details {
     width: 100%;
     //text-align: center;
-    table{
+    table {
         width: auto;
         margin: auto;
-        td:nth-child(odd){
+        td:nth-child(odd) {
             color: rgb(60, 37, 87);
             text-align: right;
             font-weight: bold;
             border: 1px solid blue;
         }
     }
-    .name{
+    .name {
         text-align: right;
         color: purple;
     }
-    .add-to-group-wrapper{
+    .add-to-group-wrapper {
         margin-top: 1em;
         border-top: 1vh dashed #dad7d7;
     }
 }
-.buttonClicked{
-    border: 2px groove #00BBBB;
+.buttonClicked {
+    border: 2px groove #00bbbb;
     background-color: #b8e3eb;
     font-weight: bolder;
     white-space: nowrap;
 }
-.unlocked-row{
+.unlocked-row {
     background-color: rgb(184, 255, 112);
     font-weight: bolder;
 }
-footer{
-    font-size: larger; font-weight: bolder;
-    background-color: #0D6795;
+footer {
+    font-size: larger;
+    font-weight: bolder;
+    background-color: #0d6795;
     color: floralwhite;
     border-top-left-radius: 8vh;
     border-top-right-radius: 8vh;
 }
 @media only screen and (min-width: 0px) and (max-width: 767px) {
-
 }
-@media only screen and (min-width: 480px){
+@media only screen and (min-width: 480px) {
 }
-@media only screen and (min-width: 768px){
- body{
-     background-color: darkcyan;
- }
- .py-4{
-     min-height: 70vh;
- }
- #left-nav{
-    //border: 1px solid red;
-    max-height: 75vh;
-    min-height: 65vh;
-    a{
-        //border-bottom: 1px solid rgb(243, 252, 243);
+@media only screen and (min-width: 768px) {
+    body {
+        background-color: darkcyan;
+    }
+    .py-4 {
+        min-height: 70vh;
+    }
+    #left-nav {
+        //border: 1px solid red;
+        max-height: 75vh;
+        min-height: 65vh;
+        a {
+            //border-bottom: 1px solid rgb(243, 252, 243);
+        }
+    }
+    footer {
+        .col-sm-4 {
+            background-color: #1187c6;
+            padding: 1em;
+        }
     }
 }
-footer{
-    .col-sm-4{
-        background-color: #1187C6;
-        padding: 1em;
+@media only screen and (min-width: 992px) {
+    body {
+        background-color: green($color: #000000);
     }
 }
-}
-@media only screen and (min-width: 992px){
-    body{background-color: green($color: #000000);}
-}
-@media only screen and (min-width: 1200px){
-    body{background-color: red($color: #000000);}
+@media only screen and (min-width: 1200px) {
+    body {
+        background-color: red($color: #000000);
+    }
 }
