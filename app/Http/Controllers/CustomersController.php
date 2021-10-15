@@ -75,9 +75,6 @@ class CustomersController extends Controller
             $customer   = new Customer;
             $guarantor  = new Guarantor;
             $redirect_ur = "/customers/view/$customer->id?new=1";
-            //create customer account no. for new account
-            $customer_class = new CustomerClass('customers','create',0,0,Auth::id(),false);
-            $customer->account_number   = $customer_class->get_account_no($customer->id);
         }
         $customer->staff_id         = Auth::id();
         $customer->first_name       = $request->first_name;
@@ -104,6 +101,11 @@ class CustomersController extends Controller
             ]);
         }
         if($customer->save()){
+            //create customer account no. for new account
+            $customer_class = new CustomerClass('customers','create',0,$customer->id,Auth::id(),false);
+            $customer->account_number   = $customer_class->get_account_no($customer->id);
+            $customer->save();
+            //save guarantor info if available
             if($request->has('gresident_address')){
                 $guarantor->gfull_name          = $request->gfull_name;
                 $guarantor->gphone_number       = $request->gphone_number;
@@ -115,7 +117,7 @@ class CustomersController extends Controller
                 $guarantor->save();
             }
             if(!$customer_id){
-                $customer_class->set_customer($customer->id);
+                //$customer_class->set_customer($customer->id);
                 $customer_class->save_transaction();
                 //initialize the account balance to 0
                 $balance = new Balance;
@@ -129,7 +131,7 @@ class CustomersController extends Controller
                 $move_path = (is_dir(public_path('../../public/images/')))? public_path('../../public/images/customers/'):'images/customers/' ;
                 //check if the customer already has an image in the directory and delete before adding new one
                 if($customer_id){
-                    if(file_exists($move_path.'/'.$customer->passport_link)){
+                    if($customer->passport_link && file_exists($move_path.'/'.$customer->passport_link)){
                         unlink($move_path.'/'.$customer->passport_link);
                     }
                 }
@@ -137,6 +139,7 @@ class CustomersController extends Controller
                 $customer->passport_link = $imageName;
                 $customer->save();
             }
+            //session()->forget('current_customer');
             session()->flash('info','Account details successfully saved.');
             return back();
             //return redirect($redirect_ur);

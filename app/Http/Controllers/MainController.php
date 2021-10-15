@@ -23,12 +23,6 @@ class MainController extends Controller
             }
             else{//set current customer session
                 $customer_class = new CustomerClass(false,false,0,$customer->id,Auth::id(),false);
-               /*  $savings = Saving::where('customer_id',$customer->id)->get();
-                $balance = Balance::where('customer_id',$customer->id)->first();
-                //return $savings;
-                $customer->savings = $savings;
-                $customer->balance_amount = $balance->amount;
-                $customer->max_loan_amount = $balance->amount * 10; */
                 $this->customer = $customer_class->customer;
                 session(['current_customer' => $this->customer]);
                 return true;
@@ -56,22 +50,6 @@ class MainController extends Controller
         $this->variable_arr['is_admin'] = (Auth::user()->rank >= 2)? True : false;
         //get staffs from db
         $this->variable_arr['staffs'] = User::get();
-     /*    if (session()->has('current_customer')) {
-            //check if the current customer already has a loan that is still running
-            $this->variable_arr['current_customer_loan'] = Loan::where('customer_id',Session()->get('current_customer')->id)->where('loan_cleared',false)->where('approval_date','!=',null)->first();
-            $this->variable_arr['current_customer_loan']? $this->variable_arr['has_loan'] = true : $this->variable_arr['has_loan'] = false;
-            //check if customer is in group
-            $this->variable_arr['in_group'] = Customer::where('id',Session()->get('current_customer')->id)->where('group_id','!=',null)->first();
-            $this->variable_arr['customer_group'] = $this->variable_arr['in_group']? Group::where('id',$this->variable_arr['in_group']->group_id)->first():false;
-            //max loan for customer
-            $this->variable_arr['max_loan_amount'] = Session()->get('current_customer')->balance_amount * 10;
-            //return $this->variable_arr['in_group'];
-            if($this->variable_arr['customer_group']){
-                if(Session()->get('current_customer')->balance_amount >= 3000 && Session()->get('current_customer')->balance_amount < 5000){
-                    $this->variable_arr['max_loan_amount'] =  50000;
-                }
-            }
-        } */
         //end session
         if(isset($_GET['end_session'])){
             if($this->endCurrentSession()){

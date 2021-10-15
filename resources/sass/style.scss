@@ -3,6 +3,12 @@ body {
     background-image: url("/images/gdbody_bg.png");
     background-size: cover;
 }
+#app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 header {
     min-height: 140px;
     background-color: grey;

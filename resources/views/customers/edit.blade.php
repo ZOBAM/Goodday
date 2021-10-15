@@ -9,13 +9,14 @@
         <h5 class="card-title text-center">Updating {{$customer->surname.' '.$customer->first_name}} <br>({{$customer->account_number}})</h5>
         <!-- <h2>Updating {{$customer->surname.' '.$customer->first_name}} ({{$customer->account_number}})</h2> -->
 
-        <form method="POST"  enctype="multipart/form-data" id='post-ad-form' action = '/customers/{{$customer->id}}'>
+        <form method="POST" @submit='update'  enctype="multipart/form-data" id='post-ad-form' action = '/customers/{{$customer->id}}'>
             {{ csrf_field() }}
-            <div class="row">
+            <div class="row" style="margin-bottom: 1rem">
                 <div class = "col-sm-4 offset-sm-4">
-                    <div style="width: 100px; height: 100px; background-color: white; margin: auto;">
+                    <div style="width: 100px; height: 100px; background-color: white; margin: auto; cursor: pointer">
                         <img src="{{asset('/images/customers/'.$customer->passport)}}" alt="" id="place_holder" style="max-width: 100px;max-height: 100px;">
                     </div>
+                        <span style="color: blue">Click on image to change profile picture.</span>
                     <input type="file" class="form-control-file" id="customer_passport" name="customer_passport" hidden>
                 </div>
             </div>
@@ -47,7 +48,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="other_name">Other Name:</label>
-                        <input type="text" class="form-control @error('other_name') is-invalid @enderror" placeholder="Other Name" id="other_name" name="other_name" value="{{ $errors->any()? old('other_name') : $customer->other_name }}" required>
+                        <input type="text" class="form-control @error('other_name') is-invalid @enderror" placeholder="Other Name" id="other_name" name="other_name" value="{{ $errors->any()? old('other_name') : $customer->other_name }}">
                         @error('other_name')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -286,6 +287,9 @@
     @include('layouts.set_customer_session')
 @endif
 @section('footerLinks')
+    <script src="{{asset('/js/customer.js')}}" defer></script>
+@endsection
+@section('general-script')
 <script>
     var app = new Vue({
     el: '#app',
@@ -294,6 +298,20 @@
         moreDetails : false,
     },
     methods:{
+        update(){
+            localStorage.setItem('updated', 1);
+        }
+    },
+    mounted(){
+        let userID = "{{$customer->id??0}}";
+        let updated = localStorage.getItem('updated');
+        if(updated == 1){
+            //alert("Updated");
+            localStorage.setItem('updated', 0);
+            setTimeout(()=>{
+                location =' http://'+location.hostname+'/customers/view/'+userID;
+            }, 2000)
+        }
     }
     })
 </script>
