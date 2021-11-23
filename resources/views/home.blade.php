@@ -1,11 +1,10 @@
-
 @extends('layouts.app')
 
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class = 'col-sm-3' id="left-nav">
-            <nav class="nav flex-column" >
+        <div class='col-sm-3' id="left-nav">
+            <nav class="nav flex-column">
                 @foreach($section_nav as $name => $link)
                 <a class="nav-link {{ isset($section_nav[$name]['nav_link_active'])? 'active':'' }}" href="{{$link['link']}}"><i class="fas fa-{{$link['icon']}}"></i> {{$name}}</a>
                 @endforeach
@@ -27,14 +26,14 @@
                         </a>
                     </span>
                     @else
-                        Customer Area
+                    Customer Area
                     @endif
                 </div>
                 <div class="card-body">
                     @if($section =='transactions')
-                        @include($section.'.view')
+                    @include($section.'.view')
                     @else
-                        @include($section.'.'.$action)
+                    @include($section.'.'.$action)
                     @endif
                 </div>
             </div>

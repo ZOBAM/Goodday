@@ -45,6 +45,7 @@ nav.navbar {
     background-image: url("/images/gdleft_nav_bg.png");
     background-size: cover;
     border-bottom-right-radius: 6vh;
+    overflow: auto;
     a {
         border: 2px solid rgb(188, 189, 188);
     }
@@ -65,6 +66,9 @@ nav.navbar {
         color: white;
         font-weight: bolder;
     }
+}
+#main-content {
+    padding: 0px;
 }
 #customer-details {
     width: 100%;
@@ -113,6 +117,9 @@ footer {
 @media only screen and (min-width: 768px) {
     body {
         background-color: darkcyan;
+        #main-content {
+            padding: 0px 0.5rem;
+        }
     }
     .py-4 {
         min-height: 70vh;
