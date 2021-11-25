@@ -138,7 +138,7 @@ class MainController extends Controller
                         case 'groups':
                             $section_nav['Customers Groups']['nav_link_active'] = true;
                             $this->variable_arr['staffs'] = User::where('rank', '>', 0)->get();
-                            $this->variable_arr['groups'] = Group::get();
+                            $this->variable_arr['groups'] = Group::paginate(10);
                             if (is_numeric($id)) {
                                 $this->variable_arr['group'] = Group::findOrFail($id);
                                 foreach ($this->variable_arr['group']->customer as $customer) {
@@ -211,7 +211,8 @@ class MainController extends Controller
                         'Pending Loans'         =>  ['link' => '/loans/pending', 'icon' => 'circle'],
                         'Approved Loans'        =>  ['link' => '/loans/approved', 'icon' => 'check'],
                         'Loan Repayment'        =>  ['link' => '/loans/repayment', 'icon' => 'pen'],
-                        'Loans Due Today'       =>  ['link' => '/loans/due_today', 'icon' => 'bullseye']
+                        'Loans Due Today'       =>  ['link' => '/loans/due_today', 'icon' => 'bullseye'],
+                        'Overdue Loans'       =>  ['link' => '/loans/overdue', 'icon' => 'archive']
                     ];
                     switch ($action) {
                         case 'create':
@@ -305,6 +306,10 @@ class MainController extends Controller
                                     $this->variable_arr['due_dates'] = Loan_repayment::where('id', $id)->where('loan_id', Session()->get('current_customer')->current_loan->id)->paginate(10);
                                 }
                             }
+                            break;
+                        case 'overdue':
+                            $this->variable_arr['overdue_repayments'] = Loan_repayment::whereDate('due_date', '<', Carbon::today())->where('repaid', false)->paginate(10);
+                            //return $variable_arr['overdue_loan'];
                             break;
                         case 'due_today':
                             $this->variable_arr['due_date'] = Carbon::today();
